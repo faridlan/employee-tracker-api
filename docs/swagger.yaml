@@ -1,0 +1,518 @@
+basePath: /
+definitions:
+  github_com_faridlan_employee-tracker-api_internal_delivery_http_dto.AssignTargetRequest:
+    properties:
+      employee_id:
+        example: uuid-employee
+        type: string
+      month:
+        example: 5
+        maximum: 12
+        minimum: 1
+        type: integer
+      nominal:
+        example: 500000000
+        type: integer
+      product_id:
+        example: uuid-product
+        type: string
+      year:
+        example: 2026
+        minimum: 2000
+        type: integer
+    required:
+    - employee_id
+    - month
+    - nominal
+    - product_id
+    - year
+    type: object
+  github_com_faridlan_employee-tracker-api_internal_delivery_http_dto.CategoryResponse:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      name_norm:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  github_com_faridlan_employee-tracker-api_internal_delivery_http_dto.CreateCategoryRequest:
+    properties:
+      name:
+        example: Kredit
+        type: string
+    required:
+    - name
+    type: object
+  github_com_faridlan_employee-tracker-api_internal_delivery_http_dto.CreateProductRequest:
+    properties:
+      category_id:
+        example: uuid-kategori
+        type: string
+      name:
+        example: KUR Bank
+        type: string
+    required:
+    - category_id
+    - name
+    type: object
+  github_com_faridlan_employee-tracker-api_internal_delivery_http_dto.EmployeeResponse:
+    properties:
+      created_at:
+        type: string
+      entry_date:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      office_location:
+        type: string
+      position:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  github_com_faridlan_employee-tracker-api_internal_delivery_http_dto.ProductResponse:
+    properties:
+      category_id:
+        type: string
+      created_at:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      name_norm:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  github_com_faridlan_employee-tracker-api_internal_delivery_http_dto.ProductWithCategoryResponse:
+    properties:
+      category:
+        $ref: '#/definitions/github_com_faridlan_employee-tracker-api_internal_delivery_http_dto.CategoryResponse'
+      category_id:
+        type: string
+      created_at:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      name_norm:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  github_com_faridlan_employee-tracker-api_internal_delivery_http_dto.RecordAchievementRequest:
+    properties:
+      closing_date:
+        example: "2026-05-10T14:00:00Z"
+        type: string
+      description:
+        example: Pencairan KUR Nasabah A
+        type: string
+      nominal:
+        example: 150000000
+        type: integer
+      target_id:
+        example: uuid-target
+        type: string
+    required:
+    - nominal
+    - target_id
+    type: object
+  github_com_faridlan_employee-tracker-api_internal_delivery_http_dto.RegisterEmployeeRequest:
+    properties:
+      entry_date:
+        example: "2024-01-15T08:00:00Z"
+        type: string
+      name:
+        example: Budi Santoso
+        type: string
+      office_location:
+        example: Cabang Utama Jakarta
+        type: string
+      position:
+        example: Sales Executive
+        type: string
+    required:
+    - entry_date
+    - name
+    - office_location
+    - position
+    type: object
+  github_com_faridlan_employee-tracker-api_internal_delivery_http_dto.TargetResponse:
+    properties:
+      created_at:
+        type: string
+      employee_id:
+        type: string
+      id:
+        type: string
+      month:
+        type: integer
+      nominal:
+        type: integer
+      product_id:
+        type: string
+      updated_at:
+        type: string
+      year:
+        type: integer
+    type: object
+  github_com_faridlan_employee-tracker-api_internal_utils.EmptyObj:
+    type: object
+  github_com_faridlan_employee-tracker-api_internal_utils.ErrorResponse:
+    properties:
+      detail:
+        type: string
+      error:
+        example: pesan error
+        type: string
+    type: object
+  ? github_com_faridlan_employee-tracker-api_internal_utils.SuccessResponse-array_github_com_faridlan_employee-tracker-api_internal_delivery_http_dto_CategoryResponse
+  : properties:
+      data:
+        items:
+          $ref: '#/definitions/github_com_faridlan_employee-tracker-api_internal_delivery_http_dto.CategoryResponse'
+        type: array
+      message:
+        type: string
+    type: object
+  ? github_com_faridlan_employee-tracker-api_internal_utils.SuccessResponse-array_github_com_faridlan_employee-tracker-api_internal_delivery_http_dto_ProductWithCategoryResponse
+  : properties:
+      data:
+        items:
+          $ref: '#/definitions/github_com_faridlan_employee-tracker-api_internal_delivery_http_dto.ProductWithCategoryResponse'
+        type: array
+      message:
+        type: string
+    type: object
+  ? github_com_faridlan_employee-tracker-api_internal_utils.SuccessResponse-github_com_faridlan_employee-tracker-api_internal_delivery_http_dto_CategoryResponse
+  : properties:
+      data:
+        $ref: '#/definitions/github_com_faridlan_employee-tracker-api_internal_delivery_http_dto.CategoryResponse'
+      message:
+        type: string
+    type: object
+  ? github_com_faridlan_employee-tracker-api_internal_utils.SuccessResponse-github_com_faridlan_employee-tracker-api_internal_delivery_http_dto_EmployeeResponse
+  : properties:
+      data:
+        $ref: '#/definitions/github_com_faridlan_employee-tracker-api_internal_delivery_http_dto.EmployeeResponse'
+      message:
+        type: string
+    type: object
+  ? github_com_faridlan_employee-tracker-api_internal_utils.SuccessResponse-github_com_faridlan_employee-tracker-api_internal_delivery_http_dto_ProductResponse
+  : properties:
+      data:
+        $ref: '#/definitions/github_com_faridlan_employee-tracker-api_internal_delivery_http_dto.ProductResponse'
+      message:
+        type: string
+    type: object
+  ? github_com_faridlan_employee-tracker-api_internal_utils.SuccessResponse-github_com_faridlan_employee-tracker-api_internal_delivery_http_dto_TargetResponse
+  : properties:
+      data:
+        $ref: '#/definitions/github_com_faridlan_employee-tracker-api_internal_delivery_http_dto.TargetResponse'
+      message:
+        type: string
+    type: object
+  ? github_com_faridlan_employee-tracker-api_internal_utils.SuccessResponse-github_com_faridlan_employee-tracker-api_internal_utils_EmptyObj
+  : properties:
+      data:
+        $ref: '#/definitions/github_com_faridlan_employee-tracker-api_internal_utils.EmptyObj'
+      message:
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: Ini adalah dokumentasi API untuk sistem pencatatan target dan performa
+    Karyawan (Employee Tracker).
+  title: Employee Tracker API
+  version: "1.0"
+paths:
+  /api/achievements:
+    post:
+      consumes:
+      - application/json
+      description: Mencatat riwayat transaksi/pencairan (ledger) baru untuk sebuah
+        target
+      parameters:
+      - description: Payload data pencapaian
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_faridlan_employee-tracker-api_internal_delivery_http_dto.RecordAchievementRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Pencapaian berhasil dicatat
+          schema:
+            $ref: '#/definitions/github_com_faridlan_employee-tracker-api_internal_utils.SuccessResponse-github_com_faridlan_employee-tracker-api_internal_utils_EmptyObj'
+        "400":
+          description: Format JSON salah atau validasi gagal
+          schema:
+            $ref: '#/definitions/github_com_faridlan_employee-tracker-api_internal_utils.ErrorResponse'
+        "404":
+          description: Target tidak ditemukan
+          schema:
+            $ref: '#/definitions/github_com_faridlan_employee-tracker-api_internal_utils.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_faridlan_employee-tracker-api_internal_utils.ErrorResponse'
+      summary: Catat Pencapaian Target
+      tags:
+      - Achievement
+  /api/categories:
+    get:
+      description: Mengambil daftar semua kategori produk yang tersedia
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Berhasil mengambil daftar kategori
+          schema:
+            $ref: '#/definitions/github_com_faridlan_employee-tracker-api_internal_utils.SuccessResponse-array_github_com_faridlan_employee-tracker-api_internal_delivery_http_dto_CategoryResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_faridlan_employee-tracker-api_internal_utils.ErrorResponse'
+      summary: List Semua Kategori
+      tags:
+      - Category
+    post:
+      consumes:
+      - application/json
+      description: Menambahkan data kategori produk master ke sistem
+      parameters:
+      - description: Payload data kategori
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_faridlan_employee-tracker-api_internal_delivery_http_dto.CreateCategoryRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Kategori berhasil dibuat
+          schema:
+            $ref: '#/definitions/github_com_faridlan_employee-tracker-api_internal_utils.SuccessResponse-github_com_faridlan_employee-tracker-api_internal_delivery_http_dto_CategoryResponse'
+        "400":
+          description: Format JSON salah atau validasi gagal
+          schema:
+            $ref: '#/definitions/github_com_faridlan_employee-tracker-api_internal_utils.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_faridlan_employee-tracker-api_internal_utils.ErrorResponse'
+      summary: Buat Kategori Baru
+      tags:
+      - Category
+  /api/categories/{category_id}/products:
+    get:
+      description: Mengambil daftar produk berdasarkan ID Kategorinya
+      parameters:
+      - description: ID Kategori
+        in: path
+        name: category_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Berhasil mengambil produk
+          schema:
+            $ref: '#/definitions/github_com_faridlan_employee-tracker-api_internal_utils.SuccessResponse-array_github_com_faridlan_employee-tracker-api_internal_delivery_http_dto_ProductWithCategoryResponse'
+        "400":
+          description: Format UUID salah
+          schema:
+            $ref: '#/definitions/github_com_faridlan_employee-tracker-api_internal_utils.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_faridlan_employee-tracker-api_internal_utils.ErrorResponse'
+      summary: List Produk Berdasarkan Kategori
+      tags:
+      - Product
+  /api/employees:
+    post:
+      consumes:
+      - application/json
+      description: Mendaftarkan data karyawan baru ke dalam sistem
+      parameters:
+      - description: Payload data karyawan
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_faridlan_employee-tracker-api_internal_delivery_http_dto.RegisterEmployeeRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Karyawan berhasil didaftarkan
+          schema:
+            $ref: '#/definitions/github_com_faridlan_employee-tracker-api_internal_utils.SuccessResponse-github_com_faridlan_employee-tracker-api_internal_delivery_http_dto_EmployeeResponse'
+        "400":
+          description: Format JSON salah atau validasi gagal
+          schema:
+            $ref: '#/definitions/github_com_faridlan_employee-tracker-api_internal_utils.ErrorResponse'
+        "500":
+          description: Gagal menyimpan data karyawan
+          schema:
+            $ref: '#/definitions/github_com_faridlan_employee-tracker-api_internal_utils.ErrorResponse'
+      summary: Registrasi Karyawan Baru
+      tags:
+      - Employee
+  /api/employees/{employee_id}/performance:
+    get:
+      description: Melihat total target, total pencapaian, dan persentase performa
+        karyawan pada bulan dan tahun tertentu
+      parameters:
+      - description: ID Karyawan
+        in: path
+        name: employee_id
+        required: true
+        type: string
+      - description: Bulan
+        in: query
+        name: month
+        required: true
+        type: integer
+      - description: Tahun
+        in: query
+        name: year
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Berhasil kalkulasi performa
+          schema:
+            $ref: '#/definitions/github_com_faridlan_employee-tracker-api_internal_utils.SuccessResponse-github_com_faridlan_employee-tracker-api_internal_delivery_http_dto_EmployeeResponse'
+        "400":
+          description: Parameter tidak valid
+          schema:
+            $ref: '#/definitions/github_com_faridlan_employee-tracker-api_internal_utils.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_faridlan_employee-tracker-api_internal_utils.ErrorResponse'
+      summary: Kalkulasi Performa Karyawan
+      tags:
+      - Target
+  /api/employees/{id}:
+    get:
+      description: Menampilkan detail informasi karyawan berdasarkan ID
+      parameters:
+      - description: ID Karyawan
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Berhasil mengambil detail karyawan
+          schema:
+            $ref: '#/definitions/github_com_faridlan_employee-tracker-api_internal_utils.SuccessResponse-github_com_faridlan_employee-tracker-api_internal_delivery_http_dto_EmployeeResponse'
+        "400":
+          description: Format UUID salah
+          schema:
+            $ref: '#/definitions/github_com_faridlan_employee-tracker-api_internal_utils.ErrorResponse'
+        "404":
+          description: Karyawan tidak ditemukan
+          schema:
+            $ref: '#/definitions/github_com_faridlan_employee-tracker-api_internal_utils.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_faridlan_employee-tracker-api_internal_utils.ErrorResponse'
+      summary: Detail Karyawan
+      tags:
+      - Employee
+  /api/products:
+    post:
+      consumes:
+      - application/json
+      description: Menambahkan data produk baru di bawah kategori tertentu
+      parameters:
+      - description: Payload data produk
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_faridlan_employee-tracker-api_internal_delivery_http_dto.CreateProductRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Produk berhasil dibuat
+          schema:
+            $ref: '#/definitions/github_com_faridlan_employee-tracker-api_internal_utils.SuccessResponse-github_com_faridlan_employee-tracker-api_internal_delivery_http_dto_ProductResponse'
+        "400":
+          description: Format JSON salah atau validasi gagal
+          schema:
+            $ref: '#/definitions/github_com_faridlan_employee-tracker-api_internal_utils.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_faridlan_employee-tracker-api_internal_utils.ErrorResponse'
+      summary: Buat Produk Baru
+      tags:
+      - Product
+  /api/targets:
+    post:
+      consumes:
+      - application/json
+      description: Menetapkan target nominal produk untuk karyawan pada bulan dan
+        tahun tertentu
+      parameters:
+      - description: Payload penetapan target
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_faridlan_employee-tracker-api_internal_delivery_http_dto.AssignTargetRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Target berhasil ditetapkan
+          schema:
+            $ref: '#/definitions/github_com_faridlan_employee-tracker-api_internal_utils.SuccessResponse-github_com_faridlan_employee-tracker-api_internal_delivery_http_dto_TargetResponse'
+        "400":
+          description: Format JSON salah atau validasi gagal
+          schema:
+            $ref: '#/definitions/github_com_faridlan_employee-tracker-api_internal_utils.ErrorResponse'
+        "409":
+          description: Target untuk produk ini pada periode tersebut sudah ada
+          schema:
+            $ref: '#/definitions/github_com_faridlan_employee-tracker-api_internal_utils.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_faridlan_employee-tracker-api_internal_utils.ErrorResponse'
+      summary: Tetapkan Target Karyawan
+      tags:
+      - Target
+securityDefinitions:
+  BearerAuth:
+    description: 'Masukkan token dengan format: Bearer {token}'
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"
