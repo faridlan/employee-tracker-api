@@ -35,19 +35,3 @@ migratedown:
 # .PHONY memastikan make tidak bentrok dengan nama folder/file yang kebetulan sama
 # ==============================================================================
 .PHONY: postgres createdb dropdb migrateup migratedown
-
-
-# ==============================================================================
-# Swaggo Commands
-# ==============================================================================
-
-swagup:
-	swag init -g cmd/api/main.go --parseDependency --parseInternal
-
-
-# ==============================================================================
-# Mockery Commands
-# ==============================================================================
-
-mockup:
-	mockery --dir=internal/domain --all --output=internal/domain/mocks --outpkg=mocks 

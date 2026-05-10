@@ -2,9 +2,9 @@ package dto
 
 import "time"
 
-type ProductRequest struct {
+type CreateProductRequest struct {
 	Name       string `json:"name" example:"KUR Bank" validate:"required"`
-	CategoryID string `json:"category_id" example:"uuid" validate:"required,uuid"`
+	CategoryID string `json:"category_id" example:"uuid-kategori" validate:"required,uuid"`
 }
 
 type ProductResponse struct {

@@ -16,7 +16,7 @@ type ProductModel struct {
 	UpdatedAt  time.Time      `gorm:"autoUpdateTime"`
 	DeletedAt  gorm.DeletedAt `gorm:"index"`
 
-	// Relasi
+	// Relasi ke CategoryModel
 	Category *CategoryModel `gorm:"foreignKey:CategoryID"`
 }
 
@@ -24,8 +24,8 @@ func (ProductModel) TableName() string {
 	return "products"
 }
 
-func (m *ProductModel) ToDomain() *domain.Product {
-	product := &domain.Product{
+func (m *ProductModel) ToDomain() domain.Product {
+	product := domain.Product{
 		ID:         m.ID,
 		Name:       m.Name,
 		NameNorm:   m.NameNorm,
@@ -34,8 +34,11 @@ func (m *ProductModel) ToDomain() *domain.Product {
 		UpdatedAt:  m.UpdatedAt,
 	}
 
+	// Cek apakah relasi Category ikut di-load oleh GORM (Preload)
+	// Jika ada, mapping juga ke struct Domain
 	if m.Category != nil {
-		product.Category = m.Category.ToDomain()
+		categoryDomain := m.Category.ToDomain()
+		product.Category = &categoryDomain
 	}
 
 	return product
