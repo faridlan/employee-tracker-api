@@ -63,8 +63,8 @@ func main() {
 	// ==========================================
 	employeeUsecase := usecase.NewEmployeeUsecase(employeeRepo)
 	categoryUsecase := usecase.NewCategoryUsecase(categoryRepo)
-	productUsecase := usecase.NewProductUsecase(productRepo, categoryRepo)
-	targetUsecase := usecase.NewTargetUsecase(targetRepo, employeeRepo, productRepo)
+	productUsecase := usecase.NewProductUsecase(productRepo)
+	targetUsecase := usecase.NewTargetUsecase(targetRepo)
 	// Inject achievementRepo DAN targetRepo (untuk validasi target existensi)
 	achievementUsecase := usecase.NewAchievementUsecase(achievementRepo, targetRepo)
 

@@ -1,9 +1,6 @@
 package domain
 
-import (
-	"context"
-	"time"
-)
+import "time"
 
 type Achievement struct {
 	ID          string
@@ -17,19 +14,12 @@ type Achievement struct {
 	Target *Target
 }
 
-type RecordAchievementInput struct {
-	TargetID    string
-	Nominal     int64
-	Description string
-	ClosingDate time.Time
-}
-
 type AchievementRepository interface {
-	Create(ctx context.Context, achievement *Achievement) error
-	GetByTargetID(ctx context.Context, targetID string) ([]*Achievement, error)
+	Create(achievement *Achievement) error
+	GetByTargetID(targetID string) ([]Achievement, error)
 }
 
 type AchievementUsecase interface {
-	RecordAchievement(ctx context.Context, input RecordAchievementInput) (*Achievement, error)
-	GetAchievementsByTarget(ctx context.Context, targetID string) ([]*Achievement, error)
+	// Menambah riwayat pencapaian baru (Ledger entry)
+	RecordAchievement(targetID string, nominal int64, description string, closingDate time.Time) error
 }

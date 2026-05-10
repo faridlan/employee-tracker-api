@@ -21,42 +21,19 @@ func SetupRoutes(app *fiber.App, h AppHandlers) {
 
 	api := app.Group("/api")
 
-	// ==========================================
-	// 1. Karyawan
-	// ==========================================
+	// Karyawan
 	api.Post("/employees", h.Employee.RegisterEmployee)
-	api.Get("/employees", h.Employee.GetAllEmployee)
 	api.Get("/employees/:id", h.Employee.GetEmployeeDetail)
-	api.Put("/employees/:id", h.Employee.UpdateEmployee)
-	api.Get("/employees/:employee_id/performance", h.Target.GetEmployeePerformance)
+	api.Get("/employees/:employee_id/performance", h.Target.GetEmployeePerformance) // <--- Kalkulasi ada di sini
 
-	// ==========================================
-	// 2. Master Data: Kategori
-	// ==========================================
+	// Master Data: Kategori & Produk
 	api.Post("/categories", h.Category.CreateCategory)
 	api.Get("/categories", h.Category.GetAllCategories)
-	api.Get("/categories/:id", h.Category.GetCategoryDetail)
-	api.Put("/categories/:id", h.Category.UpdateCategory)
-
-	// ==========================================
-	// 3. Master Data: Produk
-	// ==========================================
 	api.Post("/products", h.Product.CreateProduct)
-	api.Get("/products", h.Product.GetAllProducts)
-	api.Get("/products/:id", h.Product.GetProductByID)
-	api.Put("/products/:id", h.Product.UpdateProduct)
 	api.Get("/categories/:category_id/products", h.Product.GetProductsByCategory)
 
-	// ==========================================
-	// 4. Siklus Target
-	// ==========================================
+	// Siklus Target & Pencapaian
 	api.Post("/targets", h.Target.AssignTarget)
-	api.Patch("/targets/:id/nominal", h.Target.UpdateTargetNominal)
-	api.Delete("/targets/:id", h.Target.DeleteTarget)
-
-	// ==========================================
-	// 5. Siklus Pencapaian (Achievement)
-	// ==========================================
 	api.Post("/achievements", h.Achievement.RecordAchievement)
-	api.Get("/targets/:target_id/achievements", h.Achievement.GetAchievementsByTarget)
+
 }

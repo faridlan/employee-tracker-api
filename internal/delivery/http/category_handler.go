@@ -1,6 +1,7 @@
 package http
 
 import (
+	// Sesuaikan path import dengan module-mu
 	"github.com/faridlan/employee-tracker-api/internal/delivery/http/dto"
 	"github.com/faridlan/employee-tracker-api/internal/domain"
 	"github.com/faridlan/employee-tracker-api/internal/utils"
@@ -37,13 +38,13 @@ func toCategoryResponse(cat *domain.Category) dto.CategoryResponse {
 // @Tags Category
 // @Accept json
 // @Produce json
-// @Param request body dto.CategoryRequest true "Payload data kategori"
+// @Param request body dto.CreateCategoryRequest true "Payload data kategori"
 // @Success 201 {object} utils.SuccessResponse[dto.CategoryResponse] "Kategori berhasil dibuat"
 // @Failure 400 {object} utils.ErrorResponse "Format JSON salah atau validasi gagal"
 // @Failure 500 {object} utils.ErrorResponse "Internal Server Error"
 // @Router /api/categories [post]
 func (h *CategoryHandler) CreateCategory(c *fiber.Ctx) error {
-	var req dto.CategoryRequest
+	var req dto.CreateCategoryRequest
 	if err := c.BodyParser(&req); err != nil {
 		return utils.SendError(c, fiber.StatusBadRequest, "Format JSON salah")
 	}
@@ -52,87 +53,17 @@ func (h *CategoryHandler) CreateCategory(c *fiber.Ctx) error {
 		return utils.SendError(c, fiber.StatusBadRequest, err.Error())
 	}
 
-	categoryInput := domain.CreateCategoryInput{
+	categoryDomain := &domain.Category{
 		Name: req.Name,
 	}
 
-	result, err := h.usecase.CreateCategory(c.Context(), categoryInput)
+	err := h.usecase.CreateCategory(categoryDomain)
 	if err != nil {
 		return utils.HandleDomainError(c, err)
 	}
 
-	res := toCategoryResponse(result)
+	res := toCategoryResponse(categoryDomain)
 	return utils.SendSuccess(c, fiber.StatusCreated, "Kategori berhasil dibuat", res)
-}
-
-// UpdateCategory godoc
-// @Summary Update Data Kategori
-// @Description Memperbaharui data kategori produk yang ada di dalam sistem
-// @Tags Category
-// @Accept json
-// @Produce json
-// @Param id path string true "ID Kategori"
-// @Param request body dto.CategoryRequest true "Payload data kategori"
-// @Success 200 {object} utils.SuccessResponse[dto.CategoryResponse] "Kategori berhasil diperbaharui"
-// @Failure 400 {object} utils.ErrorResponse "Format JSON salah atau validasi gagal"
-// @Failure 404 {object} utils.ErrorResponse "Kategori tidak ditemukan"
-// @Failure 500 {object} utils.ErrorResponse "Internal Server Error"
-// @Router /api/categories/{id} [put]
-func (h *CategoryHandler) UpdateCategory(c *fiber.Ctx) error {
-	id := c.Params("id")
-
-	if err := utils.ValidateUUID(id, "id"); err != nil {
-		return utils.SendError(c, fiber.StatusBadRequest, err.Error())
-	}
-
-	var req dto.CategoryRequest
-	if err := c.BodyParser(&req); err != nil {
-		return utils.SendError(c, fiber.StatusBadRequest, "Format JSON salah")
-	}
-
-	if err := utils.ValidateStruct(&req); err != nil {
-		return utils.SendError(c, fiber.StatusBadRequest, err.Error())
-	}
-
-	categoryInput := domain.UpdateCategoryInput{
-		ID:   id,
-		Name: req.Name,
-	}
-
-	result, err := h.usecase.UpdateCategory(c.Context(), categoryInput)
-	if err != nil {
-		return utils.HandleDomainError(c, err)
-	}
-
-	res := toCategoryResponse(result)
-	return utils.SendSuccess(c, fiber.StatusOK, "Kategori berhasil diperbaharui", res) // Menggunakan StatusOK (200)
-}
-
-// GetCategoryDetail godoc
-// @Summary Detail Kategori
-// @Description Menampilkan detail informasi kategori berdasarkan ID
-// @Tags Category
-// @Produce json
-// @Param id path string true "ID Kategori"
-// @Success 200 {object} utils.SuccessResponse[dto.CategoryResponse] "Berhasil mengambil detail kategori"
-// @Failure 400 {object} utils.ErrorResponse "Format UUID salah"
-// @Failure 404 {object} utils.ErrorResponse "Kategori tidak ditemukan"
-// @Failure 500 {object} utils.ErrorResponse "Internal Server Error"
-// @Router /api/categories/{id} [get]
-func (h *CategoryHandler) GetCategoryDetail(c *fiber.Ctx) error {
-	id := c.Params("id")
-
-	if err := utils.ValidateUUID(id, "id"); err != nil {
-		return utils.SendError(c, fiber.StatusBadRequest, err.Error())
-	}
-
-	result, err := h.usecase.GetCategoryByID(c.Context(), id)
-	if err != nil {
-		return utils.HandleDomainError(c, err)
-	}
-
-	res := toCategoryResponse(result)
-	return utils.SendSuccess(c, fiber.StatusOK, "Berhasil mengambil detail kategori", res)
 }
 
 // GetAllCategories godoc
@@ -144,15 +75,19 @@ func (h *CategoryHandler) GetCategoryDetail(c *fiber.Ctx) error {
 // @Failure 500 {object} utils.ErrorResponse "Internal Server Error"
 // @Router /api/categories [get]
 func (h *CategoryHandler) GetAllCategories(c *fiber.Ctx) error {
-	categories, err := h.usecase.GetAllCategories(c.Context())
+	categories, err := h.usecase.GetAllCategories()
 	if err != nil {
-		return utils.HandleDomainError(c, err) // Menggunakan HandleDomainError agar konsisten
+		return utils.HandleDomainError(c, err)
 	}
 
-	// Mencegah return null array
-	res := make([]dto.CategoryResponse, 0)
+	var res []dto.CategoryResponse
 	for _, cat := range categories {
-		res = append(res, toCategoryResponse(cat))
+		res = append(res, toCategoryResponse(&cat))
+	}
+
+	// Memastikan array kosong tidak bernilai null di JSON (opsional tapi best practice)
+	if res == nil {
+		res = make([]dto.CategoryResponse, 0)
 	}
 
 	return utils.SendSuccess(c, fiber.StatusOK, "Berhasil mengambil daftar kategori", res)

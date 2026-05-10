@@ -1,8 +1,6 @@
 package postgres
 
 import (
-	"context"
-
 	"github.com/faridlan/employee-tracker-api/internal/domain"
 	"gorm.io/gorm"
 )
@@ -12,45 +10,42 @@ type targetRepository struct {
 }
 
 func NewTargetRepository(db *gorm.DB) domain.TargetRepository {
-	return &targetRepository{db: db}
+	return &targetRepository{
+		db: db,
+	}
 }
 
-func (r *targetRepository) Create(ctx context.Context, target *domain.Target) error {
+func (r *targetRepository) Create(target *domain.Target) error {
 	model := FromDomainTarget(target)
-	err := r.db.WithContext(ctx).Create(&model).Error
-	if err != nil {
-		return TranslateError(err)
+
+	if err := r.db.Create(&model).Error; err != nil {
+		return err
 	}
 
 	target.ID = model.ID
 	target.CreatedAt = model.CreatedAt
 	target.UpdatedAt = model.UpdatedAt
+
 	return nil
 }
 
-func (r *targetRepository) GetByID(ctx context.Context, id string) (*domain.Target, error) {
+func (r *targetRepository) GetByID(id string) (*domain.Target, error) {
 	var model TargetModel
 
-	err := r.db.WithContext(ctx).
-		Preload("Employee").
-		Preload("Product").
-		Preload("Achievements").
-		Where("id = ?", id).First(&model).Error
-
+	// Eager loading untuk Employee dan Product
+	err := r.db.Preload("Employee").Preload("Product").Where("id = ?", id).First(&model).Error
 	if err != nil {
 		return nil, TranslateError(err)
 	}
 
-	return model.ToDomain(), nil
+	domainTarget := model.ToDomain()
+	return &domainTarget, nil
 }
 
-func (r *targetRepository) GetByEmployeeAndPeriod(ctx context.Context, employeeID string, month int, year int) ([]*domain.Target, error) {
+func (r *targetRepository) GetByEmployeeAndPeriod(employeeID string, month int, year int) ([]domain.Target, error) {
 	var models []TargetModel
 
-	err := r.db.WithContext(ctx).
-		Preload("Employee").
-		Preload("Product").
-		Preload("Achievements").
+	err := r.db.Preload("Product").
 		Where("employee_id = ? AND month = ? AND year = ?", employeeID, month, year).
 		Find(&models).Error
 
@@ -58,32 +53,10 @@ func (r *targetRepository) GetByEmployeeAndPeriod(ctx context.Context, employeeI
 		return nil, TranslateError(err)
 	}
 
-	var targets []*domain.Target
-	for _, m := range models {
-		targets = append(targets, m.ToDomain())
+	var targets []domain.Target
+	for _, model := range models {
+		targets = append(targets, model.ToDomain())
 	}
 
 	return targets, nil
-}
-
-func (r *targetRepository) Update(ctx context.Context, target *domain.Target) error {
-	model := FromDomainTarget(target)
-
-	// Menggunakan Save akan memperbaharui seluruh field sesuai ID
-	err := r.db.WithContext(ctx).Save(&model).Error
-	if err != nil {
-		return TranslateError(err)
-	}
-
-	target.UpdatedAt = model.UpdatedAt
-	return nil
-}
-
-func (r *targetRepository) Delete(ctx context.Context, id string) error {
-	// GORM otomatis melakukan Soft Delete karena ada field DeletedAt
-	err := r.db.WithContext(ctx).Where("id = ?", id).Delete(&TargetModel{}).Error
-	if err != nil {
-		return TranslateError(err)
-	}
-	return nil
 }

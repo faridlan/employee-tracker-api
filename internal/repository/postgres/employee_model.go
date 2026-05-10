@@ -25,8 +25,8 @@ func (EmployeeModel) TableName() string {
 }
 
 // ToDomain mengubah model database menjadi entitas domain murni
-func (m *EmployeeModel) ToDomain() *domain.Employee {
-	return &domain.Employee{
+func (m *EmployeeModel) ToDomain() domain.Employee {
+	return domain.Employee{
 		ID:             m.ID,
 		Name:           m.Name,
 		Position:       m.Position,

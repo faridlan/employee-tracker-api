@@ -2,9 +2,9 @@ package dto
 
 import "time"
 
-// CategoryRequest adalah payload untuk membuat atau mengubah kategori
-type CategoryRequest struct {
-	Name string `json:"name" example:"Kredit Mikro" validate:"required"`
+// CreateCategoryRequest adalah payload untuk membuat kategori baru
+type CreateCategoryRequest struct {
+	Name string `json:"name" example:"Kredit" validate:"required"`
 }
 
 // CategoryResponse adalah format balikan data kategori
