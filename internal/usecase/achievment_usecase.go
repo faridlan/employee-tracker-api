@@ -1,6 +1,7 @@
 package usecase
 
 import (
+	"context"
 	"time"
 
 	"github.com/faridlan/employee-tracker-api/internal/domain"
@@ -11,37 +12,44 @@ type achievementUsecase struct {
 	targetRepo      domain.TargetRepository // Di-inject untuk validasi
 }
 
-// NewAchievementUsecase adalah constructor untuk menginisialisasi usecase achievement
-func NewAchievementUsecase(achRepo domain.AchievementRepository, tgtRepo domain.TargetRepository) domain.AchievementUsecase {
+func NewAchievementUsecase(aRepo domain.AchievementRepository, tRepo domain.TargetRepository) domain.AchievementUsecase {
 	return &achievementUsecase{
-		achievementRepo: achRepo,
-		targetRepo:      tgtRepo,
+		achievementRepo: aRepo,
+		targetRepo:      tRepo,
 	}
 }
 
-// RecordAchievement mencatat riwayat pencapaian (ledger) baru untuk sebuah target
-func (u *achievementUsecase) RecordAchievement(targetID string, nominal int64, description string, closingDate time.Time) error {
-
-	// Jika tanggal closing tidak dikirim dari request, gunakan waktu saat ini
-	if closingDate.IsZero() {
-		closingDate = time.Now()
+func (u *achievementUsecase) RecordAchievement(ctx context.Context, input domain.RecordAchievementInput) (*domain.Achievement, error) {
+	// 1. Validasi Eksistensi Target
+	if _, err := u.targetRepo.GetByID(ctx, input.TargetID); err != nil {
+		return nil, domain.NewError(domain.ErrNotFound, "Target tidak ditemukan")
 	}
 
-	// 2. Business Logic: Validasi Eksistensi Target
-	// Kita pastikan bahwa TargetID yang dikirim benar-benar ada di database
-	_, err := u.targetRepo.GetByID(targetID)
-	if err != nil {
-		return domain.NewError(domain.ErrNotFound, "gagal mencatat pencapaian: target tidak ditemukan")
+	// 2. Set default date jika tidak dikirim dari request
+	if input.ClosingDate.IsZero() {
+		input.ClosingDate = time.Now()
 	}
 
-	// 3. Susun Entity Domain
 	achievement := &domain.Achievement{
-		TargetID:    targetID,
-		Nominal:     nominal,
-		Description: description,
-		ClosingDate: closingDate,
+		TargetID:    input.TargetID,
+		Nominal:     input.Nominal,
+		Description: input.Description,
+		ClosingDate: input.ClosingDate,
 	}
 
-	// 4. Simpan ke Database via Repository
-	return u.achievementRepo.Create(achievement)
+	// 3. Simpan ke database
+	if err := u.achievementRepo.Create(ctx, achievement); err != nil {
+		return nil, err
+	}
+
+	return achievement, nil
+}
+
+func (u *achievementUsecase) GetAchievementsByTarget(ctx context.Context, targetID string) ([]*domain.Achievement, error) {
+	// Validasi target ada atau tidak
+	if _, err := u.targetRepo.GetByID(ctx, targetID); err != nil {
+		return nil, domain.NewError(domain.ErrNotFound, "Target tidak ditemukan")
+	}
+
+	return u.achievementRepo.GetByTargetID(ctx, targetID)
 }
