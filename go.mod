@@ -9,6 +9,7 @@ require (
 	github.com/gofiber/swagger v1.1.1
 	github.com/golang-migrate/migrate/v4 v4.19.1
 	github.com/joho/godotenv v1.5.1
+	github.com/stretchr/testify v1.11.1
 	github.com/swaggo/swag v1.16.6
 	gorm.io/driver/postgres v1.6.0
 	gorm.io/gorm v1.31.1
@@ -20,6 +21,7 @@ require (
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
 	github.com/clipperhouse/uax29/v2 v2.7.0 // indirect
+	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc // indirect
 	github.com/gabriel-vasile/mimetype v1.4.13 // indirect
 	github.com/go-openapi/jsonpointer v0.22.5 // indirect
 	github.com/go-openapi/jsonreference v0.21.5 // indirect
@@ -47,11 +49,13 @@ require (
 	github.com/mattn/go-isatty v0.0.21 // indirect
 	github.com/mattn/go-runewidth v0.0.23 // indirect
 	github.com/munnerz/goautoneg v0.0.0-20191010083416-a7dc8b61c822 // indirect
+	github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2 // indirect
 	github.com/prometheus/client_golang v1.23.2 // indirect
 	github.com/prometheus/client_model v0.6.2 // indirect
 	github.com/prometheus/common v0.66.1 // indirect
 	github.com/prometheus/procfs v0.16.1 // indirect
 	github.com/rogpeppe/go-internal v1.14.1 // indirect
+	github.com/stretchr/objx v0.5.2 // indirect
 	github.com/swaggo/files/v2 v2.0.2 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/valyala/fasthttp v1.70.0 // indirect
@@ -66,4 +70,5 @@ require (
 	golang.org/x/text v0.36.0 // indirect
 	golang.org/x/tools v0.44.0 // indirect
 	google.golang.org/protobuf v1.36.8 // indirect
+	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
