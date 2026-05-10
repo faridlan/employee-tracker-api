@@ -5,7 +5,6 @@ import (
 
 	"github.com/faridlan/employee-tracker-api/internal/domain"
 	"gorm.io/gorm"
-	// "github.com/faridlan/employee-tracker/domain"
 )
 
 type TargetModel struct {
@@ -19,17 +18,17 @@ type TargetModel struct {
 	UpdatedAt  time.Time      `gorm:"autoUpdateTime"`
 	DeletedAt  gorm.DeletedAt `gorm:"index"`
 
-	// Relasi
-	Employee *EmployeeModel `gorm:"foreignKey:EmployeeID"`
-	Product  *ProductModel  `gorm:"foreignKey:ProductID"`
+	Employee     *EmployeeModel     `gorm:"foreignKey:EmployeeID"`
+	Product      *ProductModel      `gorm:"foreignKey:ProductID"`
+	Achievements []AchievementModel `gorm:"foreignKey:TargetID"`
 }
 
 func (TargetModel) TableName() string {
 	return "targets"
 }
 
-func (m *TargetModel) ToDomain() domain.Target {
-	target := domain.Target{
+func (m *TargetModel) ToDomain() *domain.Target {
+	target := &domain.Target{
 		ID:         m.ID,
 		EmployeeID: m.EmployeeID,
 		ProductID:  m.ProductID,
@@ -40,15 +39,19 @@ func (m *TargetModel) ToDomain() domain.Target {
 		UpdatedAt:  m.UpdatedAt,
 	}
 
-	// Mapping relasi jika di-load oleh GORM
 	if m.Employee != nil {
-		empDomain := m.Employee.ToDomain()
-		target.Employee = &empDomain
+		target.Employee = m.Employee.ToDomain()
 	}
 
 	if m.Product != nil {
-		prodDomain := m.Product.ToDomain()
-		target.Product = &prodDomain
+		target.Product = m.Product.ToDomain()
+	}
+
+	// Mapping achievements jika di-preload
+	if len(m.Achievements) > 0 {
+		for _, ach := range m.Achievements {
+			target.Achievements = append(target.Achievements, *ach.ToDomain())
+		}
 	}
 
 	return target

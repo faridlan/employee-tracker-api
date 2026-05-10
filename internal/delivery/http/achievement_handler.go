@@ -1,8 +1,6 @@
 package http
 
 import (
-	// Sesuaikan path import dengan module-mu
-
 	"github.com/faridlan/employee-tracker-api/internal/delivery/http/dto"
 	"github.com/faridlan/employee-tracker-api/internal/domain"
 	"github.com/faridlan/employee-tracker-api/internal/utils"
@@ -17,6 +15,24 @@ func NewAchievementHandler(u domain.AchievementUsecase) *AchievementHandler {
 	return &AchievementHandler{usecase: u}
 }
 
+// ==========================================
+// HELPER: MAPPING ENTITY KE RESPONSE DTO
+// ==========================================
+func toAchievementResponse(ach *domain.Achievement) dto.AchievementResponse {
+	if ach == nil {
+		return dto.AchievementResponse{}
+	}
+	return dto.AchievementResponse{
+		ID:          ach.ID,
+		TargetID:    ach.TargetID,
+		Nominal:     ach.Nominal,
+		Description: ach.Description,
+		ClosingDate: ach.ClosingDate,
+		CreatedAt:   ach.CreatedAt,
+		UpdatedAt:   ach.UpdatedAt,
+	}
+}
+
 // RecordAchievement godoc
 // @Summary Catat Pencapaian Target
 // @Description Mencatat riwayat transaksi/pencairan (ledger) baru untuk sebuah target
@@ -24,7 +40,7 @@ func NewAchievementHandler(u domain.AchievementUsecase) *AchievementHandler {
 // @Accept json
 // @Produce json
 // @Param request body dto.RecordAchievementRequest true "Payload data pencapaian"
-// @Success 201 {object} utils.SuccessResponse[utils.EmptyObj] "Pencapaian berhasil dicatat"
+// @Success 201 {object} utils.SuccessResponse[dto.AchievementResponse] "Pencapaian berhasil dicatat"
 // @Failure 400 {object} utils.ErrorResponse "Format JSON salah atau validasi gagal"
 // @Failure 404 {object} utils.ErrorResponse "Target tidak ditemukan"
 // @Failure 500 {object} utils.ErrorResponse "Internal Server Error"
@@ -39,20 +55,47 @@ func (h *AchievementHandler) RecordAchievement(c *fiber.Ctx) error {
 		return utils.SendError(c, fiber.StatusBadRequest, err.Error())
 	}
 
-	// Panggil Usecase dengan data dari DTO
-	err := h.usecase.RecordAchievement(
-		req.TargetID,
-		req.Nominal,
-		req.Description,
-		req.ClosingDate,
-	)
+	input := domain.RecordAchievementInput{
+		TargetID:    req.TargetID,
+		Nominal:     req.Nominal,
+		Description: req.Description,
+		ClosingDate: req.ClosingDate,
+	}
 
+	result, err := h.usecase.RecordAchievement(c.Context(), input)
 	if err != nil {
 		return utils.HandleDomainError(c, err)
 	}
 
-	// Untuk response ini, kita tidak perlu membalikkan data spesifik, cukup status sukses.
-	// Jika ingin, kamu bisa membuat AchievementResponse DTO, tapi di aplikasi perbankan/ledger
-	// biasanya HTTP 201 Created dengan pesan sukses sudah cukup.
-	return utils.SendSuccess(c, fiber.StatusCreated, "Pencapaian berhasil dicatat", utils.EmptyObj{})
+	return utils.SendSuccess(c, fiber.StatusCreated, "Pencapaian berhasil dicatat", toAchievementResponse(result))
+}
+
+// GetAchievementsByTarget godoc
+// @Summary List Pencapaian Berdasarkan Target
+// @Description Mengambil riwayat/ledger pencapaian untuk satu target spesifik
+// @Tags Achievement
+// @Produce json
+// @Param target_id path string true "ID Target"
+// @Success 200 {object} utils.SuccessResponse[[]dto.AchievementResponse] "Berhasil mengambil riwayat pencapaian"
+// @Failure 400 {object} utils.ErrorResponse "Format UUID salah"
+// @Failure 404 {object} utils.ErrorResponse "Target tidak ditemukan"
+// @Failure 500 {object} utils.ErrorResponse "Internal Server Error"
+// @Router /api/targets/{target_id}/achievements [get]
+func (h *AchievementHandler) GetAchievementsByTarget(c *fiber.Ctx) error {
+	targetID := c.Params("target_id")
+	if err := utils.ValidateUUID(targetID, "target_id"); err != nil {
+		return utils.SendError(c, fiber.StatusBadRequest, err.Error())
+	}
+
+	results, err := h.usecase.GetAchievementsByTarget(c.Context(), targetID)
+	if err != nil {
+		return utils.HandleDomainError(c, err)
+	}
+
+	res := make([]dto.AchievementResponse, 0)
+	for _, ach := range results {
+		res = append(res, toAchievementResponse(ach))
+	}
+
+	return utils.SendSuccess(c, fiber.StatusOK, "Berhasil mengambil riwayat pencapaian", res)
 }

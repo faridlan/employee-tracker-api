@@ -3,7 +3,7 @@ package dto
 import "time"
 
 // RegisterEmployeeRequest adalah payload untuk mendaftarkan karyawan baru
-type RegisterEmployeeRequest struct {
+type EmployeeRequest struct {
 	Name           string    `json:"name" example:"Budi Santoso" validate:"required"`
 	Position       string    `json:"position" example:"Sales Executive" validate:"required"`
 	OfficeLocation string    `json:"office_location" example:"Cabang Utama Jakarta" validate:"required"`

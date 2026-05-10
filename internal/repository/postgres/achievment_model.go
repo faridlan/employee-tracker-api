@@ -17,7 +17,6 @@ type AchievementModel struct {
 	UpdatedAt   time.Time      `gorm:"autoUpdateTime"`
 	DeletedAt   gorm.DeletedAt `gorm:"index"`
 
-	// Relasi kembali ke Target
 	Target *TargetModel `gorm:"foreignKey:TargetID"`
 }
 
@@ -25,8 +24,8 @@ func (AchievementModel) TableName() string {
 	return "achievements"
 }
 
-func (m *AchievementModel) ToDomain() domain.Achievement {
-	achievement := domain.Achievement{
+func (m *AchievementModel) ToDomain() *domain.Achievement {
+	achievement := &domain.Achievement{
 		ID:          m.ID,
 		TargetID:    m.TargetID,
 		Nominal:     m.Nominal,
@@ -36,10 +35,8 @@ func (m *AchievementModel) ToDomain() domain.Achievement {
 		UpdatedAt:   m.UpdatedAt,
 	}
 
-	// Cek apakah relasi Target ikut di-load (Preload)
 	if m.Target != nil {
-		targetDomain := m.Target.ToDomain()
-		achievement.Target = &targetDomain
+		achievement.Target = m.Target.ToDomain()
 	}
 
 	return achievement
