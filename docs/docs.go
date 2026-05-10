@@ -43,7 +43,7 @@ const docTemplate = `{
                     "201": {
                         "description": "Pencapaian berhasil dicatat",
                         "schema": {
-                            "$ref": "#/definitions/github_com_faridlan_employee-tracker-api_internal_utils.SuccessResponse-github_com_faridlan_employee-tracker-api_internal_utils_EmptyObj"
+                            "$ref": "#/definitions/github_com_faridlan_employee-tracker-api_internal_utils.SuccessResponse-github_com_faridlan_employee-tracker-api_internal_delivery_http_dto_AchievementResponse"
                         }
                     },
                     "400": {
@@ -111,7 +111,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_faridlan_employee-tracker-api_internal_delivery_http_dto.CreateCategoryRequest"
+                            "$ref": "#/definitions/github_com_faridlan_employee-tracker-api_internal_delivery_http_dto.CategoryRequest"
                         }
                     }
                 ],
@@ -178,7 +178,135 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/categories/{id}": {
+            "get": {
+                "description": "Menampilkan detail informasi kategori berdasarkan ID",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Category"
+                ],
+                "summary": "Detail Kategori",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID Kategori",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Berhasil mengambil detail kategori",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_faridlan_employee-tracker-api_internal_utils.SuccessResponse-github_com_faridlan_employee-tracker-api_internal_delivery_http_dto_CategoryResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Format UUID salah",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_faridlan_employee-tracker-api_internal_utils.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Kategori tidak ditemukan",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_faridlan_employee-tracker-api_internal_utils.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_faridlan_employee-tracker-api_internal_utils.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "Memperbaharui data kategori produk yang ada di dalam sistem",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Category"
+                ],
+                "summary": "Update Data Kategori",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID Kategori",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Payload data kategori",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/github_com_faridlan_employee-tracker-api_internal_delivery_http_dto.CategoryRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Kategori berhasil diperbaharui",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_faridlan_employee-tracker-api_internal_utils.SuccessResponse-github_com_faridlan_employee-tracker-api_internal_delivery_http_dto_CategoryResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Format JSON salah atau validasi gagal",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_faridlan_employee-tracker-api_internal_utils.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Kategori tidak ditemukan",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_faridlan_employee-tracker-api_internal_utils.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_faridlan_employee-tracker-api_internal_utils.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/api/employees": {
+            "get": {
+                "description": "Menampilkan semua data karyawan",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Employee"
+                ],
+                "summary": "Data Karyawan",
+                "responses": {
+                    "200": {
+                        "description": "Berhasil mengambil detail karyawan",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_faridlan_employee-tracker-api_internal_utils.SuccessResponse-array_github_com_faridlan_employee-tracker-api_internal_delivery_http_dto_EmployeeResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_faridlan_employee-tracker-api_internal_utils.ErrorResponse"
+                        }
+                    }
+                }
+            },
             "post": {
                 "description": "Mendaftarkan data karyawan baru ke dalam sistem",
                 "consumes": [
@@ -198,7 +326,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_faridlan_employee-tracker-api_internal_delivery_http_dto.RegisterEmployeeRequest"
+                            "$ref": "#/definitions/github_com_faridlan_employee-tracker-api_internal_delivery_http_dto.EmployeeRequest"
                         }
                     }
                 ],
@@ -244,14 +372,14 @@ const docTemplate = `{
                     },
                     {
                         "type": "integer",
-                        "description": "Bulan",
+                        "description": "Bulan (1-12)",
                         "name": "month",
                         "in": "query",
                         "required": true
                     },
                     {
                         "type": "integer",
-                        "description": "Tahun",
+                        "description": "Tahun (Misal: 2026)",
                         "name": "year",
                         "in": "query",
                         "required": true
@@ -259,13 +387,19 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "Berhasil kalkulasi performa",
+                        "description": "Berhasil menghitung performa",
                         "schema": {
-                            "$ref": "#/definitions/github_com_faridlan_employee-tracker-api_internal_utils.SuccessResponse-github_com_faridlan_employee-tracker-api_internal_delivery_http_dto_EmployeeResponse"
+                            "$ref": "#/definitions/github_com_faridlan_employee-tracker-api_internal_utils.SuccessResponse-github_com_faridlan_employee-tracker-api_internal_delivery_http_dto_PerformanceResponse"
                         }
                     },
                     "400": {
                         "description": "Parameter tidak valid",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_faridlan_employee-tracker-api_internal_utils.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Karyawan tidak ditemukan",
                         "schema": {
                             "$ref": "#/definitions/github_com_faridlan_employee-tracker-api_internal_utils.ErrorResponse"
                         }
@@ -324,9 +458,90 @@ const docTemplate = `{
                         }
                     }
                 }
+            },
+            "put": {
+                "description": "Memperbaharui data karyawan yanga ada di dalam sistem",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Employee"
+                ],
+                "summary": "Update Karyawan Baru",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID Karyawan",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Payload data karyawan",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/github_com_faridlan_employee-tracker-api_internal_delivery_http_dto.EmployeeRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Karyawan berhasil diperbaharui",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_faridlan_employee-tracker-api_internal_utils.SuccessResponse-github_com_faridlan_employee-tracker-api_internal_delivery_http_dto_EmployeeResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Format JSON salah atau validasi gagal",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_faridlan_employee-tracker-api_internal_utils.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Karyawan tidak ditemukan",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_faridlan_employee-tracker-api_internal_utils.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Gagal menyimpan data karyawan",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_faridlan_employee-tracker-api_internal_utils.ErrorResponse"
+                        }
+                    }
+                }
             }
         },
         "/api/products": {
+            "get": {
+                "description": "Mengambil daftar semua produk beserta detail kategorinya",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Product"
+                ],
+                "summary": "List Semua Produk",
+                "responses": {
+                    "200": {
+                        "description": "Berhasil mengambil data produk",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_faridlan_employee-tracker-api_internal_utils.SuccessResponse-array_github_com_faridlan_employee-tracker-api_internal_delivery_http_dto_ProductWithCategoryResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_faridlan_employee-tracker-api_internal_utils.ErrorResponse"
+                        }
+                    }
+                }
+            },
             "post": {
                 "description": "Menambahkan data produk baru di bawah kategori tertentu",
                 "consumes": [
@@ -346,7 +561,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_faridlan_employee-tracker-api_internal_delivery_http_dto.CreateProductRequest"
+                            "$ref": "#/definitions/github_com_faridlan_employee-tracker-api_internal_delivery_http_dto.ProductRequest"
                         }
                     }
                 ],
@@ -354,11 +569,115 @@ const docTemplate = `{
                     "201": {
                         "description": "Produk berhasil dibuat",
                         "schema": {
-                            "$ref": "#/definitions/github_com_faridlan_employee-tracker-api_internal_utils.SuccessResponse-github_com_faridlan_employee-tracker-api_internal_delivery_http_dto_ProductResponse"
+                            "$ref": "#/definitions/github_com_faridlan_employee-tracker-api_internal_utils.SuccessResponse-github_com_faridlan_employee-tracker-api_internal_delivery_http_dto_ProductWithCategoryResponse"
                         }
                     },
                     "400": {
                         "description": "Format JSON salah atau validasi gagal",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_faridlan_employee-tracker-api_internal_utils.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_faridlan_employee-tracker-api_internal_utils.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/products/{id}": {
+            "get": {
+                "description": "Menampilkan detail informasi produk berdasarkan ID",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Product"
+                ],
+                "summary": "Detail Produk",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID Produk",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Berhasil mengambil detail produk",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_faridlan_employee-tracker-api_internal_utils.SuccessResponse-github_com_faridlan_employee-tracker-api_internal_delivery_http_dto_ProductWithCategoryResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Format UUID salah",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_faridlan_employee-tracker-api_internal_utils.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Produk tidak ditemukan",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_faridlan_employee-tracker-api_internal_utils.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_faridlan_employee-tracker-api_internal_utils.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "Memperbaharui data produk yang ada di dalam sistem",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Product"
+                ],
+                "summary": "Update Data Produk",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID Produk",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Payload data produk",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/github_com_faridlan_employee-tracker-api_internal_delivery_http_dto.ProductRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Produk berhasil diperbaharui",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_faridlan_employee-tracker-api_internal_utils.SuccessResponse-github_com_faridlan_employee-tracker-api_internal_delivery_http_dto_ProductWithCategoryResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Format JSON salah atau validasi gagal",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_faridlan_employee-tracker-api_internal_utils.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Produk tidak ditemukan",
                         "schema": {
                             "$ref": "#/definitions/github_com_faridlan_employee-tracker-api_internal_utils.ErrorResponse"
                         }
@@ -400,7 +719,7 @@ const docTemplate = `{
                     "201": {
                         "description": "Target berhasil ditetapkan",
                         "schema": {
-                            "$ref": "#/definitions/github_com_faridlan_employee-tracker-api_internal_utils.SuccessResponse-github_com_faridlan_employee-tracker-api_internal_delivery_http_dto_TargetResponse"
+                            "$ref": "#/definitions/github_com_faridlan_employee-tracker-api_internal_utils.SuccessResponse-github_com_faridlan_employee-tracker-api_internal_delivery_http_dto_TargetDetailResponse"
                         }
                     },
                     "400": {
@@ -409,8 +728,167 @@ const docTemplate = `{
                             "$ref": "#/definitions/github_com_faridlan_employee-tracker-api_internal_utils.ErrorResponse"
                         }
                     },
+                    "404": {
+                        "description": "Karyawan atau Produk tidak ditemukan",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_faridlan_employee-tracker-api_internal_utils.ErrorResponse"
+                        }
+                    },
                     "409": {
-                        "description": "Target untuk produk ini pada periode tersebut sudah ada",
+                        "description": "Target sudah ada (Conflict)",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_faridlan_employee-tracker-api_internal_utils.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_faridlan_employee-tracker-api_internal_utils.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/targets/{id}": {
+            "delete": {
+                "description": "Menghapus (Soft Delete) target karyawan berdasarkan ID",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Target"
+                ],
+                "summary": "Hapus Target",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID Target",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Target berhasil dihapus",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_faridlan_employee-tracker-api_internal_utils.SuccessResponse-github_com_faridlan_employee-tracker-api_internal_utils_EmptyObj"
+                        }
+                    },
+                    "400": {
+                        "description": "Format UUID salah",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_faridlan_employee-tracker-api_internal_utils.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Target tidak ditemukan",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_faridlan_employee-tracker-api_internal_utils.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_faridlan_employee-tracker-api_internal_utils.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/targets/{id}/nominal": {
+            "patch": {
+                "description": "Mengubah hanya nominal dari sebuah target yang sudah ditetapkan",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Target"
+                ],
+                "summary": "Update Nominal Target",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID Target",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Payload update nominal",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/github_com_faridlan_employee-tracker-api_internal_delivery_http_dto.UpdateTargetNominalRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Nominal target berhasil diperbaharui",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_faridlan_employee-tracker-api_internal_utils.SuccessResponse-github_com_faridlan_employee-tracker-api_internal_delivery_http_dto_TargetDetailResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Format JSON salah atau validasi gagal",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_faridlan_employee-tracker-api_internal_utils.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Target tidak ditemukan",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_faridlan_employee-tracker-api_internal_utils.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_faridlan_employee-tracker-api_internal_utils.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/targets/{target_id}/achievements": {
+            "get": {
+                "description": "Mengambil riwayat/ledger pencapaian untuk satu target spesifik",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Achievement"
+                ],
+                "summary": "List Pencapaian Berdasarkan Target",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID Target",
+                        "name": "target_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Berhasil mengambil riwayat pencapaian",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_faridlan_employee-tracker-api_internal_utils.SuccessResponse-array_github_com_faridlan_employee-tracker-api_internal_delivery_http_dto_AchievementResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Format UUID salah",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_faridlan_employee-tracker-api_internal_utils.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Target tidak ditemukan",
                         "schema": {
                             "$ref": "#/definitions/github_com_faridlan_employee-tracker-api_internal_utils.ErrorResponse"
                         }
@@ -426,6 +904,32 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "github_com_faridlan_employee-tracker-api_internal_delivery_http_dto.AchievementResponse": {
+            "type": "object",
+            "properties": {
+                "closing_date": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "nominal": {
+                    "type": "integer"
+                },
+                "target_id": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
         "github_com_faridlan_employee-tracker-api_internal_delivery_http_dto.AssignTargetRequest": {
             "type": "object",
             "required": [
@@ -438,7 +942,7 @@ const docTemplate = `{
             "properties": {
                 "employee_id": {
                     "type": "string",
-                    "example": "uuid-employee"
+                    "example": "uuid"
                 },
                 "month": {
                     "type": "integer",
@@ -452,12 +956,24 @@ const docTemplate = `{
                 },
                 "product_id": {
                     "type": "string",
-                    "example": "uuid-product"
+                    "example": "uuid"
                 },
                 "year": {
                     "type": "integer",
                     "minimum": 2000,
                     "example": 2026
+                }
+            }
+        },
+        "github_com_faridlan_employee-tracker-api_internal_delivery_http_dto.CategoryRequest": {
+            "type": "object",
+            "required": [
+                "name"
+            ],
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "example": "Kredit Mikro"
                 }
             }
         },
@@ -481,32 +997,30 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_faridlan_employee-tracker-api_internal_delivery_http_dto.CreateCategoryRequest": {
+        "github_com_faridlan_employee-tracker-api_internal_delivery_http_dto.EmployeeRequest": {
             "type": "object",
             "required": [
-                "name"
+                "entry_date",
+                "name",
+                "office_location",
+                "position"
             ],
             "properties": {
-                "name": {
+                "entry_date": {
                     "type": "string",
-                    "example": "Kredit"
-                }
-            }
-        },
-        "github_com_faridlan_employee-tracker-api_internal_delivery_http_dto.CreateProductRequest": {
-            "type": "object",
-            "required": [
-                "category_id",
-                "name"
-            ],
-            "properties": {
-                "category_id": {
-                    "type": "string",
-                    "example": "uuid-kategori"
+                    "example": "2024-01-15T08:00:00Z"
                 },
                 "name": {
                     "type": "string",
-                    "example": "KUR Bank"
+                    "example": "Budi Santoso"
+                },
+                "office_location": {
+                    "type": "string",
+                    "example": "Cabang Utama Jakarta"
+                },
+                "position": {
+                    "type": "string",
+                    "example": "Sales Executive"
                 }
             }
         },
@@ -533,6 +1047,57 @@ const docTemplate = `{
                 },
                 "updated_at": {
                     "type": "string"
+                }
+            }
+        },
+        "github_com_faridlan_employee-tracker-api_internal_delivery_http_dto.PerformanceResponse": {
+            "type": "object",
+            "properties": {
+                "employee": {
+                    "description": "Object Employee utuh",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/github_com_faridlan_employee-tracker-api_internal_delivery_http_dto.EmployeeResponse"
+                        }
+                    ]
+                },
+                "month": {
+                    "type": "integer"
+                },
+                "percentage": {
+                    "type": "number"
+                },
+                "targets": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/github_com_faridlan_employee-tracker-api_internal_delivery_http_dto.TargetPerformanceDetail"
+                    }
+                },
+                "total_achievement": {
+                    "type": "integer"
+                },
+                "total_target": {
+                    "type": "integer"
+                },
+                "year": {
+                    "type": "integer"
+                }
+            }
+        },
+        "github_com_faridlan_employee-tracker-api_internal_delivery_http_dto.ProductRequest": {
+            "type": "object",
+            "required": [
+                "category_id",
+                "name"
+            ],
+            "properties": {
+                "category_id": {
+                    "type": "string",
+                    "example": "uuid"
+                },
+                "name": {
+                    "type": "string",
+                    "example": "KUR Bank"
                 }
             }
         },
@@ -610,40 +1175,14 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_faridlan_employee-tracker-api_internal_delivery_http_dto.RegisterEmployeeRequest": {
-            "type": "object",
-            "required": [
-                "entry_date",
-                "name",
-                "office_location",
-                "position"
-            ],
-            "properties": {
-                "entry_date": {
-                    "type": "string",
-                    "example": "2024-01-15T08:00:00Z"
-                },
-                "name": {
-                    "type": "string",
-                    "example": "Budi Santoso"
-                },
-                "office_location": {
-                    "type": "string",
-                    "example": "Cabang Utama Jakarta"
-                },
-                "position": {
-                    "type": "string",
-                    "example": "Sales Executive"
-                }
-            }
-        },
-        "github_com_faridlan_employee-tracker-api_internal_delivery_http_dto.TargetResponse": {
+        "github_com_faridlan_employee-tracker-api_internal_delivery_http_dto.TargetDetailResponse": {
             "type": "object",
             "properties": {
                 "created_at": {
                     "type": "string"
                 },
                 "employee_id": {
+                    "description": "Tambahkan omitempty agar hilang jika tidak diperlukan",
                     "type": "string"
                 },
                 "id": {
@@ -655,14 +1194,55 @@ const docTemplate = `{
                 "nominal": {
                     "type": "integer"
                 },
+                "product": {
+                    "$ref": "#/definitions/github_com_faridlan_employee-tracker-api_internal_delivery_http_dto.ProductResponse"
+                },
                 "product_id": {
+                    "description": "Tambahkan omitempty",
                     "type": "string"
+                },
+                "total_achievement": {
+                    "type": "integer"
                 },
                 "updated_at": {
                     "type": "string"
                 },
                 "year": {
                     "type": "integer"
+                }
+            }
+        },
+        "github_com_faridlan_employee-tracker-api_internal_delivery_http_dto.TargetPerformanceDetail": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "nominal": {
+                    "type": "integer"
+                },
+                "product": {
+                    "description": "Relasi produk langsung di sini",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/github_com_faridlan_employee-tracker-api_internal_delivery_http_dto.ProductResponse"
+                        }
+                    ]
+                },
+                "total_achievement": {
+                    "type": "integer"
+                }
+            }
+        },
+        "github_com_faridlan_employee-tracker-api_internal_delivery_http_dto.UpdateTargetNominalRequest": {
+            "type": "object",
+            "required": [
+                "nominal"
+            ],
+            "properties": {
+                "nominal": {
+                    "type": "integer",
+                    "example": 600000000
                 }
             }
         },
@@ -681,6 +1261,20 @@ const docTemplate = `{
                 }
             }
         },
+        "github_com_faridlan_employee-tracker-api_internal_utils.SuccessResponse-array_github_com_faridlan_employee-tracker-api_internal_delivery_http_dto_AchievementResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/github_com_faridlan_employee-tracker-api_internal_delivery_http_dto.AchievementResponse"
+                    }
+                },
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
         "github_com_faridlan_employee-tracker-api_internal_utils.SuccessResponse-array_github_com_faridlan_employee-tracker-api_internal_delivery_http_dto_CategoryResponse": {
             "type": "object",
             "properties": {
@@ -688,6 +1282,20 @@ const docTemplate = `{
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/github_com_faridlan_employee-tracker-api_internal_delivery_http_dto.CategoryResponse"
+                    }
+                },
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
+        "github_com_faridlan_employee-tracker-api_internal_utils.SuccessResponse-array_github_com_faridlan_employee-tracker-api_internal_delivery_http_dto_EmployeeResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/github_com_faridlan_employee-tracker-api_internal_delivery_http_dto.EmployeeResponse"
                     }
                 },
                 "message": {
@@ -703,6 +1311,17 @@ const docTemplate = `{
                     "items": {
                         "$ref": "#/definitions/github_com_faridlan_employee-tracker-api_internal_delivery_http_dto.ProductWithCategoryResponse"
                     }
+                },
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
+        "github_com_faridlan_employee-tracker-api_internal_utils.SuccessResponse-github_com_faridlan_employee-tracker-api_internal_delivery_http_dto_AchievementResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/github_com_faridlan_employee-tracker-api_internal_delivery_http_dto.AchievementResponse"
                 },
                 "message": {
                     "type": "string"
@@ -731,22 +1350,33 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_faridlan_employee-tracker-api_internal_utils.SuccessResponse-github_com_faridlan_employee-tracker-api_internal_delivery_http_dto_ProductResponse": {
+        "github_com_faridlan_employee-tracker-api_internal_utils.SuccessResponse-github_com_faridlan_employee-tracker-api_internal_delivery_http_dto_PerformanceResponse": {
             "type": "object",
             "properties": {
                 "data": {
-                    "$ref": "#/definitions/github_com_faridlan_employee-tracker-api_internal_delivery_http_dto.ProductResponse"
+                    "$ref": "#/definitions/github_com_faridlan_employee-tracker-api_internal_delivery_http_dto.PerformanceResponse"
                 },
                 "message": {
                     "type": "string"
                 }
             }
         },
-        "github_com_faridlan_employee-tracker-api_internal_utils.SuccessResponse-github_com_faridlan_employee-tracker-api_internal_delivery_http_dto_TargetResponse": {
+        "github_com_faridlan_employee-tracker-api_internal_utils.SuccessResponse-github_com_faridlan_employee-tracker-api_internal_delivery_http_dto_ProductWithCategoryResponse": {
             "type": "object",
             "properties": {
                 "data": {
-                    "$ref": "#/definitions/github_com_faridlan_employee-tracker-api_internal_delivery_http_dto.TargetResponse"
+                    "$ref": "#/definitions/github_com_faridlan_employee-tracker-api_internal_delivery_http_dto.ProductWithCategoryResponse"
+                },
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
+        "github_com_faridlan_employee-tracker-api_internal_utils.SuccessResponse-github_com_faridlan_employee-tracker-api_internal_delivery_http_dto_TargetDetailResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/github_com_faridlan_employee-tracker-api_internal_delivery_http_dto.TargetDetailResponse"
                 },
                 "message": {
                     "type": "string"

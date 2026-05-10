@@ -1,6 +1,9 @@
 package domain
 
-import "time"
+import (
+	"context"
+	"time"
+)
 
 type Category struct {
 	ID        string
@@ -12,12 +15,25 @@ type Category struct {
 	Products []Product
 }
 
+type CreateCategoryInput struct {
+	Name string
+}
+
+type UpdateCategoryInput struct {
+	ID   string
+	Name string
+}
+
 type CategoryRepository interface {
-	Create(category *Category) error
-	GetAll() ([]Category, error)
+	Create(ctx context.Context, category *Category) error
+	Update(ctx context.Context, category *Category) error
+	GetByID(ctx context.Context, id string) (*Category, error)
+	GetAll(ctx context.Context) ([]*Category, error)
 }
 
 type CategoryUsecase interface {
-	CreateCategory(category *Category) error
-	GetAllCategories() ([]Category, error)
+	CreateCategory(ctx context.Context, input CreateCategoryInput) (*Category, error)
+	UpdateCategory(ctx context.Context, input UpdateCategoryInput) (*Category, error)
+	GetCategoryByID(ctx context.Context, id string) (*Category, error)
+	GetAllCategories(ctx context.Context) ([]*Category, error)
 }

@@ -1,80 +1,132 @@
 package usecase
 
 import (
+	"context"
+
 	"github.com/faridlan/employee-tracker-api/internal/domain"
 )
 
 type targetUsecase struct {
-	targetRepo domain.TargetRepository
+	targetRepo   domain.TargetRepository
+	employeeRepo domain.EmployeeRepository
+	productRepo  domain.ProductRepository
 }
 
-// NewTargetUsecase adalah constructor untuk menginisialisasi usecase target
-func NewTargetUsecase(repo domain.TargetRepository) domain.TargetUsecase {
+func NewTargetUsecase(tRepo domain.TargetRepository, eRepo domain.EmployeeRepository, pRepo domain.ProductRepository) domain.TargetUsecase {
 	return &targetUsecase{
-		targetRepo: repo,
+		targetRepo:   tRepo,
+		employeeRepo: eRepo,
+		productRepo:  pRepo,
 	}
 }
 
-// AssignTargetToEmployee menetapkan target baru untuk karyawan
-func (u *targetUsecase) AssignTargetToEmployee(target *domain.Target) error {
-
-	// Kita ambil target karyawan di bulan dan tahun tersebut
-	existingTargets, err := u.targetRepo.GetByEmployeeAndPeriod(target.EmployeeID, target.Month, target.Year)
-	if err != nil {
-		return err
+func (u *targetUsecase) AssignTargetToEmployee(ctx context.Context, input domain.AssignTargetInput) (*domain.Target, error) {
+	// 1. Validasi eksistensi Employee & Product
+	if _, err := u.employeeRepo.GetByID(ctx, input.EmployeeID); err != nil {
+		return nil, domain.NewError(domain.ErrNotFound, "Karyawan tidak ditemukan")
+	}
+	if _, err := u.productRepo.GetByID(ctx, input.ProductID); err != nil {
+		return nil, domain.NewError(domain.ErrNotFound, "Produk tidak ditemukan")
 	}
 
-	// Cek apakah di dalam target yang sudah ada, produknya sama
-	for _, existingTarget := range existingTargets {
-		if existingTarget.ProductID == target.ProductID {
-			return domain.NewError(domain.ErrConflict, "karyawan sudah memiliki target untuk produk ini pada periode tersebut")
-		}
-	}
-
-	// 3. Simpan ke Database via Repository
-	return u.targetRepo.Create(target)
-}
-
-// CalculateEmployeePerformance mengambil performa karyawan berdasarkan bulan & tahun
-func (u *targetUsecase) CalculateEmployeePerformance(employeeID string, month int, year int) (map[string]interface{}, error) {
-
-	// Ambil semua target karyawan pada periode tersebut
-	targets, err := u.targetRepo.GetByEmployeeAndPeriod(employeeID, month, year)
+	// 2. Cek Duplikasi Target di periode yang sama
+	existingTargets, err := u.targetRepo.GetByEmployeeAndPeriod(ctx, input.EmployeeID, input.Month, input.Year)
 	if err != nil {
 		return nil, err
 	}
 
-	var totalTargetNominal int64 = 0
-	var totalAchievementNominal int64 = 0
-
-	// Loop semua target dan hitung pencapaiannya
-	// Catatan: Ini akan lebih optimal jika digabung dengan repository logic nanti,
-	// tapi ini contoh business logic dasar di memori.
-	for _, t := range targets {
-		totalTargetNominal += t.Nominal
-
-		// Menjumlahkan semua riwayat achievement untuk target ini
-		for _, ach := range t.Achievements {
-			totalAchievementNominal += ach.Nominal
+	for _, t := range existingTargets {
+		if t.ProductID == input.ProductID {
+			return nil, domain.NewError(domain.ErrConflict, "Karyawan sudah memiliki target untuk produk ini pada periode tersebut")
 		}
 	}
 
-	// Hitung persentase
+	// 3. Simpan Target
+	target := &domain.Target{
+		EmployeeID: input.EmployeeID,
+		ProductID:  input.ProductID,
+		Nominal:    input.Nominal,
+		Month:      input.Month,
+		Year:       input.Year,
+	}
+
+	if err := u.targetRepo.Create(ctx, target); err != nil {
+		return nil, err
+	}
+
+	return u.targetRepo.GetByID(ctx, target.ID) // Reload untuk ambil relasi
+}
+
+func (u *targetUsecase) CalculateEmployeePerformance(ctx context.Context, employeeID string, month int, year int) (*domain.EmployeePerformance, error) {
+	// Validasi eksistensi employee
+	if _, err := u.employeeRepo.GetByID(ctx, employeeID); err != nil {
+		return nil, domain.NewError(domain.ErrNotFound, "Karyawan tidak ditemukan")
+	}
+
+	targets, err := u.targetRepo.GetByEmployeeAndPeriod(ctx, employeeID, month, year)
+	if err != nil {
+		return nil, err
+	}
+
+	var totalTarget int64 = 0
+	var totalAchievement int64 = 0
+
+	for _, t := range targets {
+		totalTarget += t.Nominal
+		for _, ach := range t.Achievements {
+			totalAchievement += ach.Nominal
+		}
+	}
+
 	var percentage float64 = 0
-	if totalTargetNominal > 0 {
-		percentage = (float64(totalAchievementNominal) / float64(totalTargetNominal)) * 100
+	if totalTarget > 0 {
+		percentage = (float64(totalAchievement) / float64(totalTarget)) * 100
 	}
 
-	// Susun response
-	result := map[string]interface{}{
-		"employee_id":            employeeID,
-		"month":                  month,
-		"year":                   year,
-		"total_target":           totalTargetNominal,
-		"total_achievement":      totalAchievementNominal,
-		"achievement_percentage": percentage,
-		"target_details":         targets,
+	performance := &domain.EmployeePerformance{
+		EmployeeID:       employeeID,
+		Month:            month,
+		Year:             year,
+		TotalTarget:      totalTarget,
+		TotalAchievement: totalAchievement,
+		Percentage:       percentage,
+		Targets:          targets,
 	}
 
-	return result, nil
+	return performance, nil
+}
+
+// Tambahkan fungsi UpdateTargetNominal
+func (u *targetUsecase) UpdateTargetNominal(ctx context.Context, input domain.UpdateTargetNominalInput) (*domain.Target, error) {
+	// 1. Cek eksistensi target
+	existing, err := u.targetRepo.GetByID(ctx, input.ID)
+	if err != nil {
+		return nil, domain.NewError(domain.ErrNotFound, "Target tidak ditemukan")
+	}
+
+	// 2. Business Logic: Pastikan nominal valid
+	if input.Nominal <= 0 {
+		return nil, domain.NewError(domain.ErrBadParamInput, "Nominal target harus lebih besar dari 0")
+	}
+
+	// 3. Hanya ubah nominalnya saja
+	existing.Nominal = input.Nominal
+
+	// 4. Simpan perubahan
+	if err := u.targetRepo.Update(ctx, existing); err != nil {
+		return nil, err
+	}
+
+	return existing, nil
+}
+
+// Tambahkan fungsi DeleteTarget
+func (u *targetUsecase) DeleteTarget(ctx context.Context, id string) error {
+	// Pastikan target ada sebelum dihapus
+	_, err := u.targetRepo.GetByID(ctx, id)
+	if err != nil {
+		return domain.NewError(domain.ErrNotFound, "Target tidak ditemukan")
+	}
+
+	return u.targetRepo.Delete(ctx, id)
 }
