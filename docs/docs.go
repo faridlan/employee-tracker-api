@@ -517,6 +517,179 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/meetings": {
+            "get": {
+                "description": "Menampilkan semua data notulen rapat terbaru",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Meeting"
+                ],
+                "summary": "Data Semua Notulen",
+                "responses": {
+                    "200": {
+                        "description": "Berhasil mengambil data notulen",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_faridlan_employee-tracker-api_internal_utils.SuccessResponse-array_github_com_faridlan_employee-tracker-api_internal_delivery_http_dto_MeetingMinuteResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Menyimpan notulen rapat beserta daftar peserta, tugas (action items), dan dokumentasi",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Meeting"
+                ],
+                "summary": "Buat Notulen Rapat Baru",
+                "parameters": [
+                    {
+                        "description": "Payload data notulen",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/github_com_faridlan_employee-tracker-api_internal_delivery_http_dto.CreateMeetingRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Notulen berhasil dibuat",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_faridlan_employee-tracker-api_internal_utils.SuccessResponse-github_com_faridlan_employee-tracker-api_internal_delivery_http_dto_MeetingMinuteResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Format JSON salah atau validasi gagal",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_faridlan_employee-tracker-api_internal_utils.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Gagal menyimpan data notulen",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_faridlan_employee-tracker-api_internal_utils.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/meetings/results/{resultId}/status": {
+            "patch": {
+                "description": "Endpoint khusus untuk karyawan mengupdate status tugas rapat mereka",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Meeting"
+                ],
+                "summary": "Update Status Tugas (Action Item)",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID Result / Tugas",
+                        "name": "resultId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Payload status",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/github_com_faridlan_employee-tracker-api_internal_delivery_http_dto.UpdateResultStatusRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Status tugas berhasil diperbaharui",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_faridlan_employee-tracker-api_internal_utils.SuccessResponse-github_com_faridlan_employee-tracker-api_internal_delivery_http_dto_MeetingResultResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/meetings/{id}": {
+            "get": {
+                "description": "Menampilkan detail notulen beserta peserta dan tugas-tugasnya",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Meeting"
+                ],
+                "summary": "Detail Notulen Rapat",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID Notulen",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Berhasil mengambil detail notulen",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_faridlan_employee-tracker-api_internal_utils.SuccessResponse-github_com_faridlan_employee-tracker-api_internal_delivery_http_dto_MeetingMinuteResponse"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "Memperbaharui informasi dasar dari notulen rapat",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Meeting"
+                ],
+                "summary": "Update Data Rapat",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID Notulen",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Payload data notulen",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/github_com_faridlan_employee-tracker-api_internal_delivery_http_dto.UpdateMeetingRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Notulen berhasil diperbaharui",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_faridlan_employee-tracker-api_internal_utils.SuccessResponse-github_com_faridlan_employee-tracker-api_internal_delivery_http_dto_MeetingMinuteResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/api/products": {
             "get": {
                 "description": "Mengambil daftar semua produk beserta detail kategorinya",
@@ -997,6 +1170,95 @@ const docTemplate = `{
                 }
             }
         },
+        "github_com_faridlan_employee-tracker-api_internal_delivery_http_dto.CreateMeetingRequest": {
+            "type": "object",
+            "required": [
+                "division",
+                "meeting_date",
+                "meeting_type",
+                "participant_ids",
+                "summary",
+                "title"
+            ],
+            "properties": {
+                "division": {
+                    "type": "string",
+                    "example": "Marketing"
+                },
+                "image_urls": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "example": [
+                        "[\"https://storage.com/img1.jpg\"]"
+                    ]
+                },
+                "meeting_date": {
+                    "type": "string",
+                    "example": "2024-04-01T09:00:00Z"
+                },
+                "meeting_type": {
+                    "type": "string",
+                    "example": "Offline"
+                },
+                "notes": {
+                    "type": "string",
+                    "example": "Perlu ada peningkatan promosi di Q2."
+                },
+                "participant_ids": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "example": [
+                        "[\"550e8400-e29b-41d4-a716-446655440000\"]"
+                    ]
+                },
+                "results": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/github_com_faridlan_employee-tracker-api_internal_delivery_http_dto.CreateMeetingResultRequest"
+                    }
+                },
+                "speaker": {
+                    "type": "string",
+                    "example": "Bapak Direktur"
+                },
+                "summary": {
+                    "type": "string",
+                    "example": "Evaluasi target kuartal 1 berjalan baik."
+                },
+                "title": {
+                    "type": "string",
+                    "example": "Rapat Evaluasi Q1"
+                }
+            }
+        },
+        "github_com_faridlan_employee-tracker-api_internal_delivery_http_dto.CreateMeetingResultRequest": {
+            "type": "object",
+            "required": [
+                "target_description"
+            ],
+            "properties": {
+                "employee_id": {
+                    "type": "string",
+                    "example": "550e8400-e29b-41d4-a716-446655440000"
+                },
+                "target_completion_date": {
+                    "type": "string",
+                    "example": "2024-12-31T00:00:00Z"
+                },
+                "target_description": {
+                    "type": "string",
+                    "example": "Meningkatkan penjualan produk KUR"
+                },
+                "target_nominal": {
+                    "type": "integer",
+                    "example": 500000000
+                }
+            }
+        },
         "github_com_faridlan_employee-tracker-api_internal_delivery_http_dto.EmployeeRequest": {
             "type": "object",
             "required": [
@@ -1044,6 +1306,139 @@ const docTemplate = `{
                 },
                 "position": {
                     "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "github_com_faridlan_employee-tracker-api_internal_delivery_http_dto.MeetingImageResponse": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "file_url": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "minute_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "github_com_faridlan_employee-tracker-api_internal_delivery_http_dto.MeetingMinuteResponse": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "division": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "images": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/github_com_faridlan_employee-tracker-api_internal_delivery_http_dto.MeetingImageResponse"
+                    }
+                },
+                "meeting_date": {
+                    "type": "string"
+                },
+                "meeting_type": {
+                    "type": "string"
+                },
+                "notes": {
+                    "type": "string"
+                },
+                "number_of_participants": {
+                    "type": "integer"
+                },
+                "participants": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/github_com_faridlan_employee-tracker-api_internal_delivery_http_dto.MeetingParticipantResponse"
+                    }
+                },
+                "results": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/github_com_faridlan_employee-tracker-api_internal_delivery_http_dto.MeetingResultResponse"
+                    }
+                },
+                "speaker": {
+                    "type": "string"
+                },
+                "summary": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "github_com_faridlan_employee-tracker-api_internal_delivery_http_dto.MeetingParticipantResponse": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "employee": {
+                    "$ref": "#/definitions/github_com_faridlan_employee-tracker-api_internal_delivery_http_dto.EmployeeResponse"
+                },
+                "employee_id": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "minute_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "github_com_faridlan_employee-tracker-api_internal_delivery_http_dto.MeetingResultResponse": {
+            "type": "object",
+            "properties": {
+                "achievement_status": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "employee": {
+                    "description": "Re-use EmployeeResponse milikmu",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/github_com_faridlan_employee-tracker-api_internal_delivery_http_dto.EmployeeResponse"
+                        }
+                    ]
+                },
+                "employee_id": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "minute_id": {
+                    "type": "string"
+                },
+                "target_completion_date": {
+                    "type": "string"
+                },
+                "target_description": {
+                    "type": "string"
+                },
+                "target_nominal": {
+                    "type": "integer"
                 },
                 "updated_at": {
                     "type": "string"
@@ -1234,6 +1629,63 @@ const docTemplate = `{
                 }
             }
         },
+        "github_com_faridlan_employee-tracker-api_internal_delivery_http_dto.UpdateMeetingRequest": {
+            "type": "object",
+            "required": [
+                "division",
+                "meeting_date",
+                "meeting_type",
+                "summary",
+                "title"
+            ],
+            "properties": {
+                "division": {
+                    "type": "string",
+                    "example": "Marketing"
+                },
+                "meeting_date": {
+                    "type": "string",
+                    "example": "2024-04-01T09:00:00Z"
+                },
+                "meeting_type": {
+                    "type": "string",
+                    "example": "Offline"
+                },
+                "notes": {
+                    "type": "string",
+                    "example": "Perlu ada peningkatan promosi di Q2."
+                },
+                "speaker": {
+                    "type": "string",
+                    "example": "Bapak Direktur"
+                },
+                "summary": {
+                    "type": "string",
+                    "example": "Evaluasi target kuartal 1 berjalan baik."
+                },
+                "title": {
+                    "type": "string",
+                    "example": "Rapat Evaluasi Q1"
+                }
+            }
+        },
+        "github_com_faridlan_employee-tracker-api_internal_delivery_http_dto.UpdateResultStatusRequest": {
+            "type": "object",
+            "required": [
+                "achievement_status"
+            ],
+            "properties": {
+                "achievement_status": {
+                    "type": "string",
+                    "enum": [
+                        "To Do",
+                        "In Progress",
+                        "Done"
+                    ],
+                    "example": "Done"
+                }
+            }
+        },
         "github_com_faridlan_employee-tracker-api_internal_delivery_http_dto.UpdateTargetNominalRequest": {
             "type": "object",
             "required": [
@@ -1303,6 +1755,20 @@ const docTemplate = `{
                 }
             }
         },
+        "github_com_faridlan_employee-tracker-api_internal_utils.SuccessResponse-array_github_com_faridlan_employee-tracker-api_internal_delivery_http_dto_MeetingMinuteResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/github_com_faridlan_employee-tracker-api_internal_delivery_http_dto.MeetingMinuteResponse"
+                    }
+                },
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
         "github_com_faridlan_employee-tracker-api_internal_utils.SuccessResponse-array_github_com_faridlan_employee-tracker-api_internal_delivery_http_dto_ProductWithCategoryResponse": {
             "type": "object",
             "properties": {
@@ -1344,6 +1810,28 @@ const docTemplate = `{
             "properties": {
                 "data": {
                     "$ref": "#/definitions/github_com_faridlan_employee-tracker-api_internal_delivery_http_dto.EmployeeResponse"
+                },
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
+        "github_com_faridlan_employee-tracker-api_internal_utils.SuccessResponse-github_com_faridlan_employee-tracker-api_internal_delivery_http_dto_MeetingMinuteResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/github_com_faridlan_employee-tracker-api_internal_delivery_http_dto.MeetingMinuteResponse"
+                },
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
+        "github_com_faridlan_employee-tracker-api_internal_utils.SuccessResponse-github_com_faridlan_employee-tracker-api_internal_delivery_http_dto_MeetingResultResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/github_com_faridlan_employee-tracker-api_internal_delivery_http_dto.MeetingResultResponse"
                 },
                 "message": {
                     "type": "string"

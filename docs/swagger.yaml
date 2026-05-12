@@ -65,6 +65,70 @@ definitions:
       updated_at:
         type: string
     type: object
+  github_com_faridlan_employee-tracker-api_internal_delivery_http_dto.CreateMeetingRequest:
+    properties:
+      division:
+        example: Marketing
+        type: string
+      image_urls:
+        example:
+        - '["https://storage.com/img1.jpg"]'
+        items:
+          type: string
+        type: array
+      meeting_date:
+        example: "2024-04-01T09:00:00Z"
+        type: string
+      meeting_type:
+        example: Offline
+        type: string
+      notes:
+        example: Perlu ada peningkatan promosi di Q2.
+        type: string
+      participant_ids:
+        example:
+        - '["550e8400-e29b-41d4-a716-446655440000"]'
+        items:
+          type: string
+        type: array
+      results:
+        items:
+          $ref: '#/definitions/github_com_faridlan_employee-tracker-api_internal_delivery_http_dto.CreateMeetingResultRequest'
+        type: array
+      speaker:
+        example: Bapak Direktur
+        type: string
+      summary:
+        example: Evaluasi target kuartal 1 berjalan baik.
+        type: string
+      title:
+        example: Rapat Evaluasi Q1
+        type: string
+    required:
+    - division
+    - meeting_date
+    - meeting_type
+    - participant_ids
+    - summary
+    - title
+    type: object
+  github_com_faridlan_employee-tracker-api_internal_delivery_http_dto.CreateMeetingResultRequest:
+    properties:
+      employee_id:
+        example: 550e8400-e29b-41d4-a716-446655440000
+        type: string
+      target_completion_date:
+        example: "2024-12-31T00:00:00Z"
+        type: string
+      target_description:
+        example: Meningkatkan penjualan produk KUR
+        type: string
+      target_nominal:
+        example: 500000000
+        type: integer
+    required:
+    - target_description
+    type: object
   github_com_faridlan_employee-tracker-api_internal_delivery_http_dto.EmployeeRequest:
     properties:
       entry_date:
@@ -99,6 +163,92 @@ definitions:
         type: string
       position:
         type: string
+      updated_at:
+        type: string
+    type: object
+  github_com_faridlan_employee-tracker-api_internal_delivery_http_dto.MeetingImageResponse:
+    properties:
+      created_at:
+        type: string
+      file_url:
+        type: string
+      id:
+        type: string
+      minute_id:
+        type: string
+    type: object
+  github_com_faridlan_employee-tracker-api_internal_delivery_http_dto.MeetingMinuteResponse:
+    properties:
+      created_at:
+        type: string
+      division:
+        type: string
+      id:
+        type: string
+      images:
+        items:
+          $ref: '#/definitions/github_com_faridlan_employee-tracker-api_internal_delivery_http_dto.MeetingImageResponse'
+        type: array
+      meeting_date:
+        type: string
+      meeting_type:
+        type: string
+      notes:
+        type: string
+      number_of_participants:
+        type: integer
+      participants:
+        items:
+          $ref: '#/definitions/github_com_faridlan_employee-tracker-api_internal_delivery_http_dto.MeetingParticipantResponse'
+        type: array
+      results:
+        items:
+          $ref: '#/definitions/github_com_faridlan_employee-tracker-api_internal_delivery_http_dto.MeetingResultResponse'
+        type: array
+      speaker:
+        type: string
+      summary:
+        type: string
+      title:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  github_com_faridlan_employee-tracker-api_internal_delivery_http_dto.MeetingParticipantResponse:
+    properties:
+      created_at:
+        type: string
+      employee:
+        $ref: '#/definitions/github_com_faridlan_employee-tracker-api_internal_delivery_http_dto.EmployeeResponse'
+      employee_id:
+        type: string
+      id:
+        type: string
+      minute_id:
+        type: string
+    type: object
+  github_com_faridlan_employee-tracker-api_internal_delivery_http_dto.MeetingResultResponse:
+    properties:
+      achievement_status:
+        type: string
+      created_at:
+        type: string
+      employee:
+        allOf:
+        - $ref: '#/definitions/github_com_faridlan_employee-tracker-api_internal_delivery_http_dto.EmployeeResponse'
+        description: Re-use EmployeeResponse milikmu
+      employee_id:
+        type: string
+      id:
+        type: string
+      minute_id:
+        type: string
+      target_completion_date:
+        type: string
+      target_description:
+        type: string
+      target_nominal:
+        type: integer
       updated_at:
         type: string
     type: object
@@ -223,6 +373,48 @@ definitions:
       total_achievement:
         type: integer
     type: object
+  github_com_faridlan_employee-tracker-api_internal_delivery_http_dto.UpdateMeetingRequest:
+    properties:
+      division:
+        example: Marketing
+        type: string
+      meeting_date:
+        example: "2024-04-01T09:00:00Z"
+        type: string
+      meeting_type:
+        example: Offline
+        type: string
+      notes:
+        example: Perlu ada peningkatan promosi di Q2.
+        type: string
+      speaker:
+        example: Bapak Direktur
+        type: string
+      summary:
+        example: Evaluasi target kuartal 1 berjalan baik.
+        type: string
+      title:
+        example: Rapat Evaluasi Q1
+        type: string
+    required:
+    - division
+    - meeting_date
+    - meeting_type
+    - summary
+    - title
+    type: object
+  github_com_faridlan_employee-tracker-api_internal_delivery_http_dto.UpdateResultStatusRequest:
+    properties:
+      achievement_status:
+        enum:
+        - To Do
+        - In Progress
+        - Done
+        example: Done
+        type: string
+    required:
+    - achievement_status
+    type: object
   github_com_faridlan_employee-tracker-api_internal_delivery_http_dto.UpdateTargetNominalRequest:
     properties:
       nominal:
@@ -268,6 +460,15 @@ definitions:
       message:
         type: string
     type: object
+  ? github_com_faridlan_employee-tracker-api_internal_utils.SuccessResponse-array_github_com_faridlan_employee-tracker-api_internal_delivery_http_dto_MeetingMinuteResponse
+  : properties:
+      data:
+        items:
+          $ref: '#/definitions/github_com_faridlan_employee-tracker-api_internal_delivery_http_dto.MeetingMinuteResponse'
+        type: array
+      message:
+        type: string
+    type: object
   ? github_com_faridlan_employee-tracker-api_internal_utils.SuccessResponse-array_github_com_faridlan_employee-tracker-api_internal_delivery_http_dto_ProductWithCategoryResponse
   : properties:
       data:
@@ -295,6 +496,20 @@ definitions:
   : properties:
       data:
         $ref: '#/definitions/github_com_faridlan_employee-tracker-api_internal_delivery_http_dto.EmployeeResponse'
+      message:
+        type: string
+    type: object
+  ? github_com_faridlan_employee-tracker-api_internal_utils.SuccessResponse-github_com_faridlan_employee-tracker-api_internal_delivery_http_dto_MeetingMinuteResponse
+  : properties:
+      data:
+        $ref: '#/definitions/github_com_faridlan_employee-tracker-api_internal_delivery_http_dto.MeetingMinuteResponse'
+      message:
+        type: string
+    type: object
+  ? github_com_faridlan_employee-tracker-api_internal_utils.SuccessResponse-github_com_faridlan_employee-tracker-api_internal_delivery_http_dto_MeetingResultResponse
+  : properties:
+      data:
+        $ref: '#/definitions/github_com_faridlan_employee-tracker-api_internal_delivery_http_dto.MeetingResultResponse'
       message:
         type: string
     type: object
@@ -668,6 +883,121 @@ paths:
       summary: Update Karyawan Baru
       tags:
       - Employee
+  /api/meetings:
+    get:
+      description: Menampilkan semua data notulen rapat terbaru
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Berhasil mengambil data notulen
+          schema:
+            $ref: '#/definitions/github_com_faridlan_employee-tracker-api_internal_utils.SuccessResponse-array_github_com_faridlan_employee-tracker-api_internal_delivery_http_dto_MeetingMinuteResponse'
+      summary: Data Semua Notulen
+      tags:
+      - Meeting
+    post:
+      consumes:
+      - application/json
+      description: Menyimpan notulen rapat beserta daftar peserta, tugas (action items),
+        dan dokumentasi
+      parameters:
+      - description: Payload data notulen
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_faridlan_employee-tracker-api_internal_delivery_http_dto.CreateMeetingRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Notulen berhasil dibuat
+          schema:
+            $ref: '#/definitions/github_com_faridlan_employee-tracker-api_internal_utils.SuccessResponse-github_com_faridlan_employee-tracker-api_internal_delivery_http_dto_MeetingMinuteResponse'
+        "400":
+          description: Format JSON salah atau validasi gagal
+          schema:
+            $ref: '#/definitions/github_com_faridlan_employee-tracker-api_internal_utils.ErrorResponse'
+        "500":
+          description: Gagal menyimpan data notulen
+          schema:
+            $ref: '#/definitions/github_com_faridlan_employee-tracker-api_internal_utils.ErrorResponse'
+      summary: Buat Notulen Rapat Baru
+      tags:
+      - Meeting
+  /api/meetings/{id}:
+    get:
+      description: Menampilkan detail notulen beserta peserta dan tugas-tugasnya
+      parameters:
+      - description: ID Notulen
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Berhasil mengambil detail notulen
+          schema:
+            $ref: '#/definitions/github_com_faridlan_employee-tracker-api_internal_utils.SuccessResponse-github_com_faridlan_employee-tracker-api_internal_delivery_http_dto_MeetingMinuteResponse'
+      summary: Detail Notulen Rapat
+      tags:
+      - Meeting
+    put:
+      consumes:
+      - application/json
+      description: Memperbaharui informasi dasar dari notulen rapat
+      parameters:
+      - description: ID Notulen
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Payload data notulen
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_faridlan_employee-tracker-api_internal_delivery_http_dto.UpdateMeetingRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Notulen berhasil diperbaharui
+          schema:
+            $ref: '#/definitions/github_com_faridlan_employee-tracker-api_internal_utils.SuccessResponse-github_com_faridlan_employee-tracker-api_internal_delivery_http_dto_MeetingMinuteResponse'
+      summary: Update Data Rapat
+      tags:
+      - Meeting
+  /api/meetings/results/{resultId}/status:
+    patch:
+      consumes:
+      - application/json
+      description: Endpoint khusus untuk karyawan mengupdate status tugas rapat mereka
+      parameters:
+      - description: ID Result / Tugas
+        in: path
+        name: resultId
+        required: true
+        type: string
+      - description: Payload status
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_faridlan_employee-tracker-api_internal_delivery_http_dto.UpdateResultStatusRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Status tugas berhasil diperbaharui
+          schema:
+            $ref: '#/definitions/github_com_faridlan_employee-tracker-api_internal_utils.SuccessResponse-github_com_faridlan_employee-tracker-api_internal_delivery_http_dto_MeetingResultResponse'
+      summary: Update Status Tugas (Action Item)
+      tags:
+      - Meeting
   /api/products:
     get:
       description: Mengambil daftar semua produk beserta detail kategorinya

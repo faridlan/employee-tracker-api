@@ -6,11 +6,12 @@ import (
 )
 
 type AppHandlers struct {
-	Employee    *EmployeeHandler
-	Category    *CategoryHandler
-	Product     *ProductHandler
-	Target      *TargetHandler
-	Achievement *AchievementHandler
+	Employee      *EmployeeHandler
+	Category      *CategoryHandler
+	Product       *ProductHandler
+	Target        *TargetHandler
+	Achievement   *AchievementHandler
+	MeetingMinute *MeetingMinuteHandler
 }
 
 func SetupRoutes(app *fiber.App, h AppHandlers) {
@@ -67,4 +68,13 @@ func SetupRoutes(app *fiber.App, h AppHandlers) {
 	// ==========================================
 	api.Post("/achievements", h.Achievement.RecordAchievement)
 	api.Get("/targets/:target_id/achievements", h.Achievement.GetAchievementsByTarget)
+
+	// ==========================================
+	// 6. Siklus Rapat & Notulen (Meeting Minutes)
+	// ==========================================
+	api.Post("/meetings", h.MeetingMinute.CreateMeeting)
+	api.Get("/meetings", h.MeetingMinute.GetAllMeetings)
+	api.Get("/meetings/:id", h.MeetingMinute.GetMeetingDetail)
+	api.Put("/meetings/:id", h.MeetingMinute.UpdateMeeting)
+	api.Patch("/meetings/results/:resultId/status", h.MeetingMinute.UpdateTaskStatus)
 }
