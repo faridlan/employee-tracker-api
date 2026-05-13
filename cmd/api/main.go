@@ -57,6 +57,7 @@ func main() {
 	productRepo := postgres.NewProductRepository(db)
 	targetRepo := postgres.NewTargetRepository(db)
 	achievementRepo := postgres.NewAchievementRepository(db)
+	notulenRepo := postgres.NewMeetingMinuteRepository(db)
 
 	// ==========================================
 	// 2. INISIASI USECASE (Layer Business Logic)
@@ -65,8 +66,8 @@ func main() {
 	categoryUsecase := usecase.NewCategoryUsecase(categoryRepo)
 	productUsecase := usecase.NewProductUsecase(productRepo, categoryRepo)
 	targetUsecase := usecase.NewTargetUsecase(targetRepo, employeeRepo, productRepo)
-	// Inject achievementRepo DAN targetRepo (untuk validasi target existensi)
 	achievementUsecase := usecase.NewAchievementUsecase(achievementRepo, targetRepo)
+	notuleUsecase := usecase.NewMeetingMinuteUsecase(notulenRepo)
 
 	// ==========================================
 	// 3. INISIASI HANDLER (Layer Delivery)
@@ -76,16 +77,18 @@ func main() {
 	productHandler := myHttp.NewProductHandler(productUsecase)
 	targetHandler := myHttp.NewTargetHandler(targetUsecase)
 	achievementHandler := myHttp.NewAchievementHandler(achievementUsecase)
+	notulenHandler := myHttp.NewMeetingMinuteHandler(notuleUsecase)
 
 	// ==========================================
 	// 4. BUNGKUS KE DALAM STRUCT REGISTRY
 	// ==========================================
 	handlers := myHttp.AppHandlers{
-		Employee:    employeeHandler,
-		Category:    categoryHandler,
-		Product:     productHandler,
-		Target:      targetHandler,
-		Achievement: achievementHandler,
+		Employee:      employeeHandler,
+		Category:      categoryHandler,
+		Product:       productHandler,
+		Target:        targetHandler,
+		Achievement:   achievementHandler,
+		MeetingMinute: notulenHandler,
 	}
 
 	// Menjalankan migrasi golang-migrate jika diatur dalam config
