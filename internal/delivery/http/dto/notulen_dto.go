@@ -21,9 +21,9 @@ type CreateMeetingRequest struct {
 	Summary        string                       `json:"summary" example:"Evaluasi target kuartal 1 berjalan baik." validate:"required"`
 	Notes          string                       `json:"notes" example:"Perlu ada peningkatan promosi di Q2."`
 	Speaker        *string                      `json:"speaker" example:"Bapak Direktur"`
-	ParticipantIDs []string                     `json:"participant_ids" example:"[\"550e8400-e29b-41d4-a716-446655440000\"]" validate:"required"`
+	ParticipantIDs []string                     `json:"participant_ids" example:"550e8400-e29b-41d4-a716-446655440000" validate:"required"`
 	Results        []CreateMeetingResultRequest `json:"results" validate:"dive"`
-	ImageURLs      []string                     `json:"image_urls" example:"[\"https://storage.com/img1.jpg\"]"`
+	ImageURLs      []string                     `json:"image_urls" example:"https://storage.com/img1.jpg"`
 }
 
 type UpdateMeetingRequest struct {

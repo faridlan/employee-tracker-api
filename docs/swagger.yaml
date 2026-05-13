@@ -72,7 +72,7 @@ definitions:
         type: string
       image_urls:
         example:
-        - '["https://storage.com/img1.jpg"]'
+        - https://storage.com/img1.jpg
         items:
           type: string
         type: array
@@ -87,7 +87,7 @@ definitions:
         type: string
       participant_ids:
         example:
-        - '["550e8400-e29b-41d4-a716-446655440000"]'
+        - 550e8400-e29b-41d4-a716-446655440000
         items:
           type: string
         type: array
