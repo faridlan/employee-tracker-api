@@ -60,6 +60,7 @@ func SetupRoutes(app *fiber.App, h AppHandlers) {
 	// 4. Siklus Target
 	// ==========================================
 	api.Post("/targets", h.Target.AssignTarget)
+	api.Get("/targets", h.Target.GetAllTargets)
 	api.Patch("/targets/:id/nominal", h.Target.UpdateTargetNominal)
 	api.Delete("/targets/:id", h.Target.DeleteTarget)
 

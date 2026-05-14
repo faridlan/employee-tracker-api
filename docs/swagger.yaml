@@ -339,6 +339,8 @@ definitions:
     properties:
       created_at:
         type: string
+      employee:
+        $ref: '#/definitions/github_com_faridlan_employee-tracker-api_internal_delivery_http_dto.EmployeeResponse'
       employee_id:
         description: Tambahkan omitempty agar hilang jika tidak diperlukan
         type: string
@@ -474,6 +476,15 @@ definitions:
       data:
         items:
           $ref: '#/definitions/github_com_faridlan_employee-tracker-api_internal_delivery_http_dto.ProductWithCategoryResponse'
+        type: array
+      message:
+        type: string
+    type: object
+  ? github_com_faridlan_employee-tracker-api_internal_utils.SuccessResponse-array_github_com_faridlan_employee-tracker-api_internal_delivery_http_dto_TargetDetailResponse
+  : properties:
+      data:
+        items:
+          $ref: '#/definitions/github_com_faridlan_employee-tracker-api_internal_delivery_http_dto.TargetDetailResponse'
         type: array
       message:
         type: string
@@ -782,15 +793,13 @@ paths:
         name: employee_id
         required: true
         type: string
-      - description: Bulan (1-12)
+      - description: Bulan (1-12) - Opsional
         in: query
         name: month
-        required: true
         type: integer
-      - description: 'Tahun (Misal: 2026)'
+      - description: 'Tahun (Misal: 2026) - Opsional'
         in: query
         name: year
-        required: true
         type: integer
       produces:
       - application/json
@@ -1114,6 +1123,36 @@ paths:
       tags:
       - Product
   /api/targets:
+    get:
+      description: Mengambil daftar semua target dengan filter opsional bulan dan
+        tahun
+      parameters:
+      - description: Bulan (1-12) - Opsional
+        in: query
+        name: month
+        type: integer
+      - description: 'Tahun (Misal: 2026) - Opsional'
+        in: query
+        name: year
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Berhasil mengambil data target
+          schema:
+            $ref: '#/definitions/github_com_faridlan_employee-tracker-api_internal_utils.SuccessResponse-array_github_com_faridlan_employee-tracker-api_internal_delivery_http_dto_TargetDetailResponse'
+        "400":
+          description: Parameter tidak valid
+          schema:
+            $ref: '#/definitions/github_com_faridlan_employee-tracker-api_internal_utils.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_faridlan_employee-tracker-api_internal_utils.ErrorResponse'
+      summary: List Semua Target
+      tags:
+      - Target
     post:
       consumes:
       - application/json

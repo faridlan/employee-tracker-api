@@ -27,8 +27,9 @@ type TargetResponse struct {
 
 type TargetDetailResponse struct {
 	TargetResponse
-	Product          *ProductResponse `json:"product,omitempty"`
-	TotalAchievement int64            `json:"total_achievement"`
+	Employee         *EmployeeResponse `json:"employee,omitempty"`
+	Product          *ProductResponse  `json:"product,omitempty"`
+	TotalAchievement int64             `json:"total_achievement"`
 }
 
 // ==========================================
