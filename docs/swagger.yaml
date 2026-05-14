@@ -339,6 +339,8 @@ definitions:
     properties:
       created_at:
         type: string
+      employee:
+        $ref: '#/definitions/github_com_faridlan_employee-tracker-api_internal_delivery_http_dto.EmployeeResponse'
       employee_id:
         description: Tambahkan omitempty agar hilang jika tidak diperlukan
         type: string
@@ -1122,7 +1124,17 @@ paths:
       - Product
   /api/targets:
     get:
-      description: Mengambil daftar semua target dari semua karyawan (Untuk Dashboard)
+      description: Mengambil daftar semua target dengan filter opsional bulan dan
+        tahun
+      parameters:
+      - description: Bulan (1-12) - Opsional
+        in: query
+        name: month
+        type: integer
+      - description: 'Tahun (Misal: 2026) - Opsional'
+        in: query
+        name: year
+        type: integer
       produces:
       - application/json
       responses:
@@ -1130,6 +1142,10 @@ paths:
           description: Berhasil mengambil data target
           schema:
             $ref: '#/definitions/github_com_faridlan_employee-tracker-api_internal_utils.SuccessResponse-array_github_com_faridlan_employee-tracker-api_internal_delivery_http_dto_TargetDetailResponse'
+        "400":
+          description: Parameter tidak valid
+          schema:
+            $ref: '#/definitions/github_com_faridlan_employee-tracker-api_internal_utils.ErrorResponse'
         "500":
           description: Internal Server Error
           schema:

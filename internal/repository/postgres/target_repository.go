@@ -44,15 +44,35 @@ func (r *targetRepository) GetByID(ctx context.Context, id string) (*domain.Targ
 	return model.ToDomain(), nil
 }
 
-func (r *targetRepository) GetAll(ctx context.Context) ([]*domain.Target, error) {
+func (r *targetRepository) GetAll(ctx context.Context, filter domain.TargetFilter) ([]*domain.Target, error) {
 	var models []TargetModel
 
-	err := r.db.WithContext(ctx).
+	query := r.db.WithContext(ctx).
 		Preload("Employee").
 		Preload("Product").
-		Preload("Achievements").
-		Find(&models).Error
+		Preload("Achievements")
 
+	// 1. Terapkan Filter Kondisional
+	if filter.Month > 0 {
+		query = query.Where("month = ?", filter.Month)
+	}
+	if filter.Year > 0 {
+		query = query.Where("year = ?", filter.Year)
+	}
+	if filter.ProductID != "" {
+		query = query.Where("product_id = ?", filter.ProductID)
+	}
+
+	// 2. Terapkan Pagination
+	if filter.Limit > 0 {
+		query = query.Limit(filter.Limit)
+	}
+	if filter.Offset > 0 {
+		query = query.Offset(filter.Offset)
+	}
+
+	// 3. Eksekusi
+	err := query.Find(&models).Error
 	if err != nil {
 		return nil, TranslateError(err)
 	}

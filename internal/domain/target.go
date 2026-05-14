@@ -44,10 +44,18 @@ type UpdateTargetNominalInput struct {
 	Nominal int64
 }
 
+type TargetFilter struct {
+	Month     int
+	Year      int
+	ProductID string
+	Limit     int
+	Offset    int
+}
+
 type TargetRepository interface {
 	Create(ctx context.Context, target *Target) error
 	GetByID(ctx context.Context, id string) (*Target, error)
-	GetAll(ctx context.Context) ([]*Target, error)
+	GetAll(ctx context.Context, filter TargetFilter) ([]*Target, error)
 	GetByEmployeeAndPeriod(ctx context.Context, employeeID string, month int, year int) ([]*Target, error)
 	Update(ctx context.Context, target *Target) error
 	Delete(ctx context.Context, id string) error
@@ -58,5 +66,5 @@ type TargetUsecase interface {
 	CalculateEmployeePerformance(ctx context.Context, employeeID string, month int, year int) (*EmployeePerformance, error)
 	UpdateTargetNominal(ctx context.Context, input UpdateTargetNominalInput) (*Target, error)
 	DeleteTarget(ctx context.Context, id string) error
-	GetAllTargets(ctx context.Context) ([]*Target, error)
+	GetAllTargets(ctx context.Context, filter TargetFilter) ([]*Target, error)
 }

@@ -864,7 +864,7 @@ const docTemplate = `{
         },
         "/api/targets": {
             "get": {
-                "description": "Mengambil daftar semua target dari semua karyawan (Untuk Dashboard)",
+                "description": "Mengambil daftar semua target dengan filter opsional bulan dan tahun",
                 "produces": [
                     "application/json"
                 ],
@@ -872,11 +872,31 @@ const docTemplate = `{
                     "Target"
                 ],
                 "summary": "List Semua Target",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Bulan (1-12) - Opsional",
+                        "name": "month",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Tahun (Misal: 2026) - Opsional",
+                        "name": "year",
+                        "in": "query"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "Berhasil mengambil data target",
                         "schema": {
                             "$ref": "#/definitions/github_com_faridlan_employee-tracker-api_internal_utils.SuccessResponse-array_github_com_faridlan_employee-tracker-api_internal_delivery_http_dto_TargetDetailResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Parameter tidak valid",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_faridlan_employee-tracker-api_internal_utils.ErrorResponse"
                         }
                     },
                     "500": {
@@ -1597,6 +1617,9 @@ const docTemplate = `{
             "properties": {
                 "created_at": {
                     "type": "string"
+                },
+                "employee": {
+                    "$ref": "#/definitions/github_com_faridlan_employee-tracker-api_internal_delivery_http_dto.EmployeeResponse"
                 },
                 "employee_id": {
                     "description": "Tambahkan omitempty agar hilang jika tidak diperlukan",
