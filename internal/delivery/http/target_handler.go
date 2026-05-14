@@ -173,8 +173,8 @@ func (h *TargetHandler) AssignTarget(c *fiber.Ctx) error {
 // @Tags Target
 // @Produce json
 // @Param employee_id path string true "ID Karyawan"
-// @Param month query int true "Bulan (1-12)"
-// @Param year query int true "Tahun (Misal: 2026)"
+// @Param month query int false "Bulan (1-12) - Opsional"
+// @Param year query int false "Tahun (Misal: 2026) - Opsional"
 // @Success 200 {object} utils.SuccessResponse[dto.PerformanceResponse] "Berhasil menghitung performa"
 // @Failure 400 {object} utils.ErrorResponse "Parameter tidak valid"
 // @Failure 404 {object} utils.ErrorResponse "Karyawan tidak ditemukan"
@@ -186,10 +186,12 @@ func (h *TargetHandler) GetEmployeePerformance(c *fiber.Ctx) error {
 		return utils.SendError(c, fiber.StatusBadRequest, err.Error())
 	}
 
+	// Default value dari QueryInt adalah 0 jika tidak dikirim
 	month := c.QueryInt("month", 0)
 	year := c.QueryInt("year", 0)
 
-	if month < 1 || month > 12 || year < 2000 {
+	// REVISI VALIDASI: Mengizinkan angka 0 (0 artinya All/Tanpa Filter)
+	if month < 0 || month > 12 || year < 0 {
 		return utils.SendError(c, fiber.StatusBadRequest, "Parameter month atau year tidak valid")
 	}
 
@@ -199,6 +201,28 @@ func (h *TargetHandler) GetEmployeePerformance(c *fiber.Ctx) error {
 	}
 
 	return utils.SendSuccess(c, fiber.StatusOK, "Berhasil menghitung performa karyawan", toPerformanceResponse(result))
+}
+
+// GetAllTargets godoc
+// @Summary List Semua Target
+// @Description Mengambil daftar semua target dari semua karyawan (Untuk Dashboard)
+// @Tags Target
+// @Produce json
+// @Success 200 {object} utils.SuccessResponse[[]dto.TargetDetailResponse] "Berhasil mengambil data target"
+// @Failure 500 {object} utils.ErrorResponse "Internal Server Error"
+// @Router /api/targets [get]
+func (h *TargetHandler) GetAllTargets(c *fiber.Ctx) error {
+	results, err := h.usecase.GetAllTargets(c.Context())
+	if err != nil {
+		return utils.HandleDomainError(c, err)
+	}
+
+	res := make([]dto.TargetDetailResponse, 0)
+	for _, t := range results {
+		res = append(res, toTargetDetailResponse(t))
+	}
+
+	return utils.SendSuccess(c, fiber.StatusOK, "Berhasil mengambil semua data target", res)
 }
 
 // UpdateTargetNominal godoc

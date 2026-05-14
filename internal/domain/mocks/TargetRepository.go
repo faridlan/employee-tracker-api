@@ -50,6 +50,36 @@ func (_m *TargetRepository) Delete(ctx context.Context, id string) error {
 	return r0
 }
 
+// GetAll provides a mock function with given fields: ctx
+func (_m *TargetRepository) GetAll(ctx context.Context) ([]*domain.Target, error) {
+	ret := _m.Called(ctx)
+
+	if len(ret) == 0 {
+		panic("no return value specified for GetAll")
+	}
+
+	var r0 []*domain.Target
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context) ([]*domain.Target, error)); ok {
+		return rf(ctx)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context) []*domain.Target); ok {
+		r0 = rf(ctx)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).([]*domain.Target)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context) error); ok {
+		r1 = rf(ctx)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // GetByEmployeeAndPeriod provides a mock function with given fields: ctx, employeeID, month, year
 func (_m *TargetRepository) GetByEmployeeAndPeriod(ctx context.Context, employeeID string, month int, year int) ([]*domain.Target, error) {
 	ret := _m.Called(ctx, employeeID, month, year)

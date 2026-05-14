@@ -44,16 +44,47 @@ func (r *targetRepository) GetByID(ctx context.Context, id string) (*domain.Targ
 	return model.ToDomain(), nil
 }
 
-func (r *targetRepository) GetByEmployeeAndPeriod(ctx context.Context, employeeID string, month int, year int) ([]*domain.Target, error) {
+func (r *targetRepository) GetAll(ctx context.Context) ([]*domain.Target, error) {
 	var models []TargetModel
 
 	err := r.db.WithContext(ctx).
 		Preload("Employee").
 		Preload("Product").
 		Preload("Achievements").
-		Where("employee_id = ? AND month = ? AND year = ?", employeeID, month, year).
 		Find(&models).Error
 
+	if err != nil {
+		return nil, TranslateError(err)
+	}
+
+	var targets []*domain.Target
+	for _, m := range models {
+		targets = append(targets, m.ToDomain())
+	}
+
+	return targets, nil
+}
+
+func (r *targetRepository) GetByEmployeeAndPeriod(ctx context.Context, employeeID string, month int, year int) ([]*domain.Target, error) {
+	var models []TargetModel
+
+	// Inisiasi query dasar
+	query := r.db.WithContext(ctx).
+		Preload("Employee").
+		Preload("Product").
+		Preload("Achievements").
+		Where("employee_id = ?", employeeID)
+
+	// Filter dinamis: Jika > 0, tambahkan kondisi WHERE
+	if month > 0 {
+		query = query.Where("month = ?", month)
+	}
+	if year > 0 {
+		query = query.Where("year = ?", year)
+	}
+
+	// Eksekusi query
+	err := query.Find(&models).Error
 	if err != nil {
 		return nil, TranslateError(err)
 	}

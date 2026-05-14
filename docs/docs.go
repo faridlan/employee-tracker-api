@@ -372,17 +372,15 @@ const docTemplate = `{
                     },
                     {
                         "type": "integer",
-                        "description": "Bulan (1-12)",
+                        "description": "Bulan (1-12) - Opsional",
                         "name": "month",
-                        "in": "query",
-                        "required": true
+                        "in": "query"
                     },
                     {
                         "type": "integer",
-                        "description": "Tahun (Misal: 2026)",
+                        "description": "Tahun (Misal: 2026) - Opsional",
                         "name": "year",
-                        "in": "query",
-                        "required": true
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -865,6 +863,30 @@ const docTemplate = `{
             }
         },
         "/api/targets": {
+            "get": {
+                "description": "Mengambil daftar semua target dari semua karyawan (Untuk Dashboard)",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Target"
+                ],
+                "summary": "List Semua Target",
+                "responses": {
+                    "200": {
+                        "description": "Berhasil mengambil data target",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_faridlan_employee-tracker-api_internal_utils.SuccessResponse-array_github_com_faridlan_employee-tracker-api_internal_delivery_http_dto_TargetDetailResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_faridlan_employee-tracker-api_internal_utils.ErrorResponse"
+                        }
+                    }
+                }
+            },
             "post": {
                 "description": "Menetapkan target nominal produk untuk karyawan pada bulan dan tahun tertentu",
                 "consumes": [
@@ -1776,6 +1798,20 @@ const docTemplate = `{
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/github_com_faridlan_employee-tracker-api_internal_delivery_http_dto.ProductWithCategoryResponse"
+                    }
+                },
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
+        "github_com_faridlan_employee-tracker-api_internal_utils.SuccessResponse-array_github_com_faridlan_employee-tracker-api_internal_delivery_http_dto_TargetDetailResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/github_com_faridlan_employee-tracker-api_internal_delivery_http_dto.TargetDetailResponse"
                     }
                 },
                 "message": {

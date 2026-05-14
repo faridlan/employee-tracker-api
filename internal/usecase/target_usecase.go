@@ -96,6 +96,10 @@ func (u *targetUsecase) CalculateEmployeePerformance(ctx context.Context, employ
 	return performance, nil
 }
 
+func (u *targetUsecase) GetAllTargets(ctx context.Context) ([]*domain.Target, error) {
+	return u.targetRepo.GetAll(ctx)
+}
+
 // Tambahkan fungsi UpdateTargetNominal
 func (u *targetUsecase) UpdateTargetNominal(ctx context.Context, input domain.UpdateTargetNominalInput) (*domain.Target, error) {
 	// 1. Cek eksistensi target
