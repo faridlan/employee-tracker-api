@@ -85,7 +85,7 @@ func (r *targetRepository) GetAll(ctx context.Context, filter domain.TargetFilte
 	return targets, nil
 }
 
-func (r *targetRepository) GetByEmployeeAndPeriod(ctx context.Context, employeeID string, month int, year int) ([]*domain.Target, error) {
+func (r *targetRepository) GetByEmployeeAndPeriod(ctx context.Context, employeeID string, filter domain.TargetFilter) ([]*domain.Target, error) {
 	var models []TargetModel
 
 	// Inisiasi query dasar
@@ -95,12 +95,23 @@ func (r *targetRepository) GetByEmployeeAndPeriod(ctx context.Context, employeeI
 		Preload("Achievements").
 		Where("employee_id = ?", employeeID)
 
-	// Filter dinamis: Jika > 0, tambahkan kondisi WHERE
-	if month > 0 {
-		query = query.Where("month = ?", month)
+	// 1. Terapkan Filter Kondisional
+	if filter.Month > 0 {
+		query = query.Where("month = ?", filter.Month)
 	}
-	if year > 0 {
-		query = query.Where("year = ?", year)
+	if filter.Year > 0 {
+		query = query.Where("year = ?", filter.Year)
+	}
+	if filter.ProductID != "" {
+		query = query.Where("product_id = ?", filter.ProductID)
+	}
+
+	// 2. Terapkan Pagination
+	if filter.Limit > 0 {
+		query = query.Limit(filter.Limit)
+	}
+	if filter.Offset > 0 {
+		query = query.Offset(filter.Offset)
 	}
 
 	// Eksekusi query
