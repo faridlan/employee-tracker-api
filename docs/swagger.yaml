@@ -793,6 +793,15 @@ paths:
         name: employee_id
         required: true
         type: string
+      - description: 'Nomor Halaman (Default: 1)'
+        in: query
+        name: page
+        type: integer
+      - description: 'Jumlah Data per Halaman (Default: 10, Gunakan 0 untuk tanpa
+          limit/hati-hati)'
+        in: query
+        name: limit
+        type: integer
       - description: Bulan (1-12) - Opsional
         in: query
         name: month
@@ -801,6 +810,10 @@ paths:
         in: query
         name: year
         type: integer
+      - description: ID Produk - Opsional
+        in: query
+        name: product_id
+        type: string
       produces:
       - application/json
       responses:
@@ -1124,9 +1137,17 @@ paths:
       - Product
   /api/targets:
     get:
-      description: Mengambil daftar semua target dengan filter opsional bulan dan
-        tahun
+      description: Mengambil daftar semua target dengan filter opsional dan pagination
       parameters:
+      - description: 'Nomor Halaman (Default: 1)'
+        in: query
+        name: page
+        type: integer
+      - description: 'Jumlah Data per Halaman (Default: 10, Gunakan 0 untuk tanpa
+          limit/hati-hati)'
+        in: query
+        name: limit
+        type: integer
       - description: Bulan (1-12) - Opsional
         in: query
         name: month
@@ -1135,6 +1156,10 @@ paths:
         in: query
         name: year
         type: integer
+      - description: ID Produk - Opsional
+        in: query
+        name: product_id
+        type: string
       produces:
       - application/json
       responses:
@@ -1150,7 +1175,7 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/github_com_faridlan_employee-tracker-api_internal_utils.ErrorResponse'
-      summary: List Semua Target
+      summary: List Semua Target (Dengan Pagination & Filter)
       tags:
       - Target
     post:

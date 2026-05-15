@@ -56,14 +56,14 @@ type TargetRepository interface {
 	Create(ctx context.Context, target *Target) error
 	GetByID(ctx context.Context, id string) (*Target, error)
 	GetAll(ctx context.Context, filter TargetFilter) ([]*Target, error)
-	GetByEmployeeAndPeriod(ctx context.Context, employeeID string, month int, year int) ([]*Target, error)
+	GetByEmployeeAndPeriod(ctx context.Context, employeeID string, filter TargetFilter) ([]*Target, error)
 	Update(ctx context.Context, target *Target) error
 	Delete(ctx context.Context, id string) error
 }
 
 type TargetUsecase interface {
 	AssignTargetToEmployee(ctx context.Context, input AssignTargetInput) (*Target, error)
-	CalculateEmployeePerformance(ctx context.Context, employeeID string, month int, year int) (*EmployeePerformance, error)
+	CalculateEmployeePerformance(ctx context.Context, employeeID string, filter TargetFilter) (*EmployeePerformance, error)
 	UpdateTargetNominal(ctx context.Context, input UpdateTargetNominalInput) (*Target, error)
 	DeleteTarget(ctx context.Context, id string) error
 	GetAllTargets(ctx context.Context, filter TargetFilter) ([]*Target, error)

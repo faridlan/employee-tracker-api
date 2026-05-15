@@ -29,8 +29,13 @@ func (u *targetUsecase) AssignTargetToEmployee(ctx context.Context, input domain
 		return nil, domain.NewError(domain.ErrNotFound, "Produk tidak ditemukan")
 	}
 
+	filter := domain.TargetFilter{
+		Month: input.Month,
+		Year:  input.Year,
+	}
+
 	// 2. Cek Duplikasi Target di periode yang sama
-	existingTargets, err := u.targetRepo.GetByEmployeeAndPeriod(ctx, input.EmployeeID, input.Month, input.Year)
+	existingTargets, err := u.targetRepo.GetByEmployeeAndPeriod(ctx, input.EmployeeID, filter)
 	if err != nil {
 		return nil, err
 	}
@@ -57,13 +62,13 @@ func (u *targetUsecase) AssignTargetToEmployee(ctx context.Context, input domain
 	return u.targetRepo.GetByID(ctx, target.ID) // Reload untuk ambil relasi
 }
 
-func (u *targetUsecase) CalculateEmployeePerformance(ctx context.Context, employeeID string, month int, year int) (*domain.EmployeePerformance, error) {
+func (u *targetUsecase) CalculateEmployeePerformance(ctx context.Context, employeeID string, filter domain.TargetFilter) (*domain.EmployeePerformance, error) {
 	// Validasi eksistensi employee
 	if _, err := u.employeeRepo.GetByID(ctx, employeeID); err != nil {
 		return nil, domain.NewError(domain.ErrNotFound, "Karyawan tidak ditemukan")
 	}
 
-	targets, err := u.targetRepo.GetByEmployeeAndPeriod(ctx, employeeID, month, year)
+	targets, err := u.targetRepo.GetByEmployeeAndPeriod(ctx, employeeID, filter)
 	if err != nil {
 		return nil, err
 	}
@@ -85,8 +90,8 @@ func (u *targetUsecase) CalculateEmployeePerformance(ctx context.Context, employ
 
 	performance := &domain.EmployeePerformance{
 		EmployeeID:       employeeID,
-		Month:            month,
-		Year:             year,
+		Month:            filter.Month,
+		Year:             filter.Year,
 		TotalTarget:      totalTarget,
 		TotalAchievement: totalAchievement,
 		Percentage:       percentage,
