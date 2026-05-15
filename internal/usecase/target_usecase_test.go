@@ -35,10 +35,15 @@ func TestTargetUsecase_AssignTargetToEmployee(t *testing.T) {
 		mockEmployeeRepo.On("GetByID", mock.Anything, input.EmployeeID).Return(&domain.Employee{ID: "emp-1"}, nil).Once()
 		// 2. Mock Product Exist
 		mockProductRepo.On("GetByID", mock.Anything, input.ProductID).Return(&domain.Product{ID: "prod-1"}, nil).Once()
+
 		// 3. Mock Check Duplicate (Return empty slice = no duplicate)
-		mockTargetRepo.On("GetByEmployeeAndPeriod", mock.Anything, input.EmployeeID, input.Month, input.Year).Return([]*domain.Target{}, nil).Once()
+		// UPDATE: Gunakan domain.TargetFilter
+		filter := domain.TargetFilter{Month: input.Month, Year: input.Year}
+		mockTargetRepo.On("GetByEmployeeAndPeriod", mock.Anything, input.EmployeeID, filter).Return([]*domain.Target{}, nil).Once()
+
 		// 4. Mock Create
 		mockTargetRepo.On("Create", mock.Anything, mock.AnythingOfType("*domain.Target")).Return(nil).Once()
+
 		// 5. Mock Reload
 		expectedTarget := &domain.Target{ID: "target-1", EmployeeID: "emp-1", ProductID: "prod-1"}
 		mockTargetRepo.On("GetByID", mock.Anything, mock.AnythingOfType("string")).Return(expectedTarget, nil).Once()
@@ -76,7 +81,10 @@ func TestTargetUsecase_AssignTargetToEmployee(t *testing.T) {
 		existingTargets := []*domain.Target{
 			{ID: "target-old", ProductID: "prod-1"},
 		}
-		mockTargetRepo.On("GetByEmployeeAndPeriod", mock.Anything, input.EmployeeID, input.Month, input.Year).Return(existingTargets, nil).Once()
+
+		// UPDATE: Gunakan domain.TargetFilter
+		filter := domain.TargetFilter{Month: input.Month, Year: input.Year}
+		mockTargetRepo.On("GetByEmployeeAndPeriod", mock.Anything, input.EmployeeID, filter).Return(existingTargets, nil).Once()
 
 		result, err := usecase.AssignTargetToEmployee(context.Background(), input)
 
@@ -116,12 +124,14 @@ func TestTargetUsecase_CalculateEmployeePerformance(t *testing.T) {
 			},
 		}
 
-		mockTargetRepo.On("GetByEmployeeAndPeriod", mock.Anything, employeeID, month, year).Return(targets, nil).Once()
-
 		filter := domain.TargetFilter{
 			Month: month,
 			Year:  year,
 		}
+
+		// UPDATE: Gunakan filter sebagai argumen mock
+		mockTargetRepo.On("GetByEmployeeAndPeriod", mock.Anything, employeeID, filter).Return(targets, nil).Once()
+
 		result, err := usecase.CalculateEmployeePerformance(context.Background(), employeeID, filter)
 
 		assert.NoError(t, err)
@@ -138,19 +148,49 @@ func TestTargetUsecase_CalculateEmployeePerformance(t *testing.T) {
 		employeeID := "emp-1"
 		mockEmployeeRepo.On("GetByID", mock.Anything, employeeID).Return(&domain.Employee{ID: employeeID}, nil).Once()
 
-		// Return empty targets
-		mockTargetRepo.On("GetByEmployeeAndPeriod", mock.Anything, employeeID, 5, 2026).Return([]*domain.Target{}, nil).Once()
-
 		filter := domain.TargetFilter{
 			Month: 5,
 			Year:  2026,
 		}
+
+		// Return empty targets
+		// UPDATE: Gunakan filter
+		mockTargetRepo.On("GetByEmployeeAndPeriod", mock.Anything, employeeID, filter).Return([]*domain.Target{}, nil).Once()
 
 		result, err := usecase.CalculateEmployeePerformance(context.Background(), employeeID, filter)
 
 		assert.NoError(t, err)
 		assert.NotNil(t, result)
 		assert.Equal(t, float64(0), result.Percentage) // Pastikan tidak terjadi panic / division by zero
+	})
+}
+
+func TestTargetUsecase_GetAllTargets(t *testing.T) {
+	mockTargetRepo, _, _, usecase := setupTargetUsecase()
+
+	t.Run("Success - Get All With Filter", func(t *testing.T) {
+		filter := domain.TargetFilter{
+			ProductID: "prod-1",
+			Limit:     10,
+			Offset:    0,
+		}
+
+		expectedTargets := []*domain.Target{
+			{ID: "target-1", ProductID: "prod-1"},
+			{ID: "target-2", ProductID: "prod-1"},
+		}
+
+		// Mock repository untuk menerima filter dan mereturn data
+		mockTargetRepo.On("GetAll", mock.Anything, filter).Return(expectedTargets, nil).Once()
+
+		result, err := usecase.GetAllTargets(context.Background(), filter)
+
+		assert.NoError(t, err)
+		assert.NotNil(t, result)
+		assert.Len(t, result, 2)
+		assert.Equal(t, "target-1", result[0].ID)
+
+		mockTargetRepo.AssertExpectations(t)
 	})
 }
 
