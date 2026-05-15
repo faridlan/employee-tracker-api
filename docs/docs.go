@@ -372,6 +372,18 @@ const docTemplate = `{
                     },
                     {
                         "type": "integer",
+                        "description": "Nomor Halaman (Default: 1)",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Jumlah Data per Halaman (Default: 10, Gunakan 0 untuk tanpa limit/hati-hati)",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
                         "description": "Bulan (1-12) - Opsional",
                         "name": "month",
                         "in": "query"
@@ -380,6 +392,12 @@ const docTemplate = `{
                         "type": "integer",
                         "description": "Tahun (Misal: 2026) - Opsional",
                         "name": "year",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "ID Produk - Opsional",
+                        "name": "product_id",
                         "in": "query"
                     }
                 ],
@@ -864,15 +882,27 @@ const docTemplate = `{
         },
         "/api/targets": {
             "get": {
-                "description": "Mengambil daftar semua target dengan filter opsional bulan dan tahun",
+                "description": "Mengambil daftar semua target dengan filter opsional dan pagination",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "Target"
                 ],
-                "summary": "List Semua Target",
+                "summary": "List Semua Target (Dengan Pagination \u0026 Filter)",
                 "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Nomor Halaman (Default: 1)",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Jumlah Data per Halaman (Default: 10, Gunakan 0 untuk tanpa limit/hati-hati)",
+                        "name": "limit",
+                        "in": "query"
+                    },
                     {
                         "type": "integer",
                         "description": "Bulan (1-12) - Opsional",
@@ -883,6 +913,12 @@ const docTemplate = `{
                         "type": "integer",
                         "description": "Tahun (Misal: 2026) - Opsional",
                         "name": "year",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "ID Produk - Opsional",
+                        "name": "product_id",
                         "in": "query"
                     }
                 ],

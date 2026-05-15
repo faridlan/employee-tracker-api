@@ -118,7 +118,11 @@ func TestTargetUsecase_CalculateEmployeePerformance(t *testing.T) {
 
 		mockTargetRepo.On("GetByEmployeeAndPeriod", mock.Anything, employeeID, month, year).Return(targets, nil).Once()
 
-		result, err := usecase.CalculateEmployeePerformance(context.Background(), employeeID, month, year)
+		filter := domain.TargetFilter{
+			Month: month,
+			Year:  year,
+		}
+		result, err := usecase.CalculateEmployeePerformance(context.Background(), employeeID, filter)
 
 		assert.NoError(t, err)
 		assert.NotNil(t, result)
@@ -137,7 +141,12 @@ func TestTargetUsecase_CalculateEmployeePerformance(t *testing.T) {
 		// Return empty targets
 		mockTargetRepo.On("GetByEmployeeAndPeriod", mock.Anything, employeeID, 5, 2026).Return([]*domain.Target{}, nil).Once()
 
-		result, err := usecase.CalculateEmployeePerformance(context.Background(), employeeID, 5, 2026)
+		filter := domain.TargetFilter{
+			Month: 5,
+			Year:  2026,
+		}
+
+		result, err := usecase.CalculateEmployeePerformance(context.Background(), employeeID, filter)
 
 		assert.NoError(t, err)
 		assert.NotNil(t, result)

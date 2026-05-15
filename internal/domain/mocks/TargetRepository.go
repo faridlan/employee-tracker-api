@@ -80,9 +80,9 @@ func (_m *TargetRepository) GetAll(ctx context.Context, filter domain.TargetFilt
 	return r0, r1
 }
 
-// GetByEmployeeAndPeriod provides a mock function with given fields: ctx, employeeID, month, year
-func (_m *TargetRepository) GetByEmployeeAndPeriod(ctx context.Context, employeeID string, month int, year int) ([]*domain.Target, error) {
-	ret := _m.Called(ctx, employeeID, month, year)
+// GetByEmployeeAndPeriod provides a mock function with given fields: ctx, employeeID, filter
+func (_m *TargetRepository) GetByEmployeeAndPeriod(ctx context.Context, employeeID string, filter domain.TargetFilter) ([]*domain.Target, error) {
+	ret := _m.Called(ctx, employeeID, filter)
 
 	if len(ret) == 0 {
 		panic("no return value specified for GetByEmployeeAndPeriod")
@@ -90,19 +90,19 @@ func (_m *TargetRepository) GetByEmployeeAndPeriod(ctx context.Context, employee
 
 	var r0 []*domain.Target
 	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, string, int, int) ([]*domain.Target, error)); ok {
-		return rf(ctx, employeeID, month, year)
+	if rf, ok := ret.Get(0).(func(context.Context, string, domain.TargetFilter) ([]*domain.Target, error)); ok {
+		return rf(ctx, employeeID, filter)
 	}
-	if rf, ok := ret.Get(0).(func(context.Context, string, int, int) []*domain.Target); ok {
-		r0 = rf(ctx, employeeID, month, year)
+	if rf, ok := ret.Get(0).(func(context.Context, string, domain.TargetFilter) []*domain.Target); ok {
+		r0 = rf(ctx, employeeID, filter)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).([]*domain.Target)
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(context.Context, string, int, int) error); ok {
-		r1 = rf(ctx, employeeID, month, year)
+	if rf, ok := ret.Get(1).(func(context.Context, string, domain.TargetFilter) error); ok {
+		r1 = rf(ctx, employeeID, filter)
 	} else {
 		r1 = ret.Error(1)
 	}

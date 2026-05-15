@@ -185,8 +185,11 @@ func (h *TargetHandler) AssignTarget(c *fiber.Ctx) error {
 // @Tags Target
 // @Produce json
 // @Param employee_id path string true "ID Karyawan"
+// @Param page query int false "Nomor Halaman (Default: 1)"
+// @Param limit query int false "Jumlah Data per Halaman (Default: 10, Gunakan 0 untuk tanpa limit/hati-hati)"
 // @Param month query int false "Bulan (1-12) - Opsional"
 // @Param year query int false "Tahun (Misal: 2026) - Opsional"
+// @Param product_id query string false "ID Produk - Opsional"
 // @Success 200 {object} utils.SuccessResponse[dto.PerformanceResponse] "Berhasil menghitung performa"
 // @Failure 400 {object} utils.ErrorResponse "Parameter tidak valid"
 // @Failure 404 {object} utils.ErrorResponse "Karyawan tidak ditemukan"
@@ -198,16 +201,38 @@ func (h *TargetHandler) GetEmployeePerformance(c *fiber.Ctx) error {
 		return utils.SendError(c, fiber.StatusBadRequest, err.Error())
 	}
 
-	// Default value dari QueryInt adalah 0 jika tidak dikirim
+	page := c.QueryInt("page", 1)
+	limit := c.QueryInt("limit", 10) // Secara default kita batasi 10 data per request
 	month := c.QueryInt("month", 0)
 	year := c.QueryInt("year", 0)
+	productID := c.Query("product_id")
 
-	// REVISI VALIDASI: Mengizinkan angka 0 (0 artinya All/Tanpa Filter)
+	// 2. Validasi & Kalkulasi
 	if month < 0 || month > 12 || year < 0 {
 		return utils.SendError(c, fiber.StatusBadRequest, "Parameter month atau year tidak valid")
 	}
+	if productID != "" {
+		if err := utils.ValidateUUID(productID, "product_id"); err != nil {
+			return utils.SendError(c, fiber.StatusBadRequest, err.Error())
+		}
+	}
+	if page < 1 {
+		page = 1
+	}
 
-	result, err := h.usecase.CalculateEmployeePerformance(c.Context(), employeeID, month, year)
+	// Rumus mencari Offset: (Page - 1) * Limit
+	offset := (page - 1) * limit
+
+	// 3. Bungkus ke dalam Struct Filter
+	filter := domain.TargetFilter{
+		Month:     month,
+		Year:      year,
+		ProductID: productID,
+		Limit:     limit,
+		Offset:    offset,
+	}
+
+	result, err := h.usecase.CalculateEmployeePerformance(c.Context(), employeeID, filter)
 	if err != nil {
 		return utils.HandleDomainError(c, err)
 	}

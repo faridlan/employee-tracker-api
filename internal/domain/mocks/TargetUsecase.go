@@ -44,9 +44,9 @@ func (_m *TargetUsecase) AssignTargetToEmployee(ctx context.Context, input domai
 	return r0, r1
 }
 
-// CalculateEmployeePerformance provides a mock function with given fields: ctx, employeeID, month, year
-func (_m *TargetUsecase) CalculateEmployeePerformance(ctx context.Context, employeeID string, month int, year int) (*domain.EmployeePerformance, error) {
-	ret := _m.Called(ctx, employeeID, month, year)
+// CalculateEmployeePerformance provides a mock function with given fields: ctx, employeeID, filter
+func (_m *TargetUsecase) CalculateEmployeePerformance(ctx context.Context, employeeID string, filter domain.TargetFilter) (*domain.EmployeePerformance, error) {
+	ret := _m.Called(ctx, employeeID, filter)
 
 	if len(ret) == 0 {
 		panic("no return value specified for CalculateEmployeePerformance")
@@ -54,19 +54,19 @@ func (_m *TargetUsecase) CalculateEmployeePerformance(ctx context.Context, emplo
 
 	var r0 *domain.EmployeePerformance
 	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, string, int, int) (*domain.EmployeePerformance, error)); ok {
-		return rf(ctx, employeeID, month, year)
+	if rf, ok := ret.Get(0).(func(context.Context, string, domain.TargetFilter) (*domain.EmployeePerformance, error)); ok {
+		return rf(ctx, employeeID, filter)
 	}
-	if rf, ok := ret.Get(0).(func(context.Context, string, int, int) *domain.EmployeePerformance); ok {
-		r0 = rf(ctx, employeeID, month, year)
+	if rf, ok := ret.Get(0).(func(context.Context, string, domain.TargetFilter) *domain.EmployeePerformance); ok {
+		r0 = rf(ctx, employeeID, filter)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).(*domain.EmployeePerformance)
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(context.Context, string, int, int) error); ok {
-		r1 = rf(ctx, employeeID, month, year)
+	if rf, ok := ret.Get(1).(func(context.Context, string, domain.TargetFilter) error); ok {
+		r1 = rf(ctx, employeeID, filter)
 	} else {
 		r1 = ret.Error(1)
 	}
