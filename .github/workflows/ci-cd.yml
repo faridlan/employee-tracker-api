@@ -65,7 +65,7 @@ jobs:
       - name: Deploy Services via Docker Compose
         run: |
           echo "Memasuki ruang Staging..."
-          cd /home/nullhakim/employee-tracker/stag
+          cd /home/nullhakim/apps/employee-tracker/stag
           
           echo "Menarik image terbaru dari Docker Hub..."
           sudo docker compose pull
