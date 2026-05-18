@@ -14,26 +14,28 @@ type CreateMeetingResultRequest struct {
 }
 
 type CreateMeetingRequest struct {
-	Division       string                       `json:"division" example:"Marketing" validate:"required"`
-	Title          string                       `json:"title" example:"Rapat Evaluasi Q1" validate:"required"`
-	MeetingDate    time.Time                    `json:"meeting_date" example:"2024-04-01T09:00:00Z" validate:"required"`
-	MeetingType    string                       `json:"meeting_type" example:"Offline" validate:"required"`
-	Summary        string                       `json:"summary" example:"Evaluasi target kuartal 1 berjalan baik." validate:"required"`
-	Notes          string                       `json:"notes" example:"Perlu ada peningkatan promosi di Q2."`
-	Speaker        *string                      `json:"speaker" example:"Bapak Direktur"`
-	ParticipantIDs []string                     `json:"participant_ids" example:"550e8400-e29b-41d4-a716-446655440000" validate:"required"`
-	Results        []CreateMeetingResultRequest `json:"results" validate:"dive"`
-	ImageURLs      []string                     `json:"image_urls" example:"https://storage.com/img1.jpg"`
+	Division             string                       `json:"division" example:"Marketing" validate:"required"`
+	Title                string                       `json:"title" example:"Rapat Evaluasi Q1" validate:"required"`
+	MeetingDate          time.Time                    `json:"meeting_date" example:"2024-04-01T09:00:00Z" validate:"required"`
+	MeetingType          string                       `json:"meeting_type" example:"Offline" validate:"required"`
+	Summary              string                       `json:"summary" example:"Evaluasi target kuartal 1 berjalan baik." validate:"required"`
+	Notes                string                       `json:"notes" example:"Perlu ada peningkatan promosi di Q2."`
+	Speaker              *string                      `json:"speaker" example:"Bapak Direktur"`
+	ParticipantIDs       []string                     `json:"participant_ids" example:"550e8400-e29b-41d4-a716-446655440000" validate:"required"`
+	ExternalParticipants []string                     `json:"external_participants" example:"Bapak Dani,Ibu Salsabila"`
+	Results              []CreateMeetingResultRequest `json:"results" validate:"dive"`
+	ImageURLs            []string                     `json:"image_urls" example:"https://storage.com/img1.jpg"`
 }
 
 type UpdateMeetingRequest struct {
-	Division    string    `json:"division" example:"Marketing" validate:"required"`
-	Title       string    `json:"title" example:"Rapat Evaluasi Q1" validate:"required"`
-	MeetingDate time.Time `json:"meeting_date" example:"2024-04-01T09:00:00Z" validate:"required"`
-	MeetingType string    `json:"meeting_type" example:"Offline" validate:"required"`
-	Summary     string    `json:"summary" example:"Evaluasi target kuartal 1 berjalan baik." validate:"required"`
-	Notes       string    `json:"notes" example:"Perlu ada peningkatan promosi di Q2."`
-	Speaker     *string   `json:"speaker" example:"Bapak Direktur"`
+	Division             string    `json:"division" example:"Marketing" validate:"required"`
+	Title                string    `json:"title" example:"Rapat Evaluasi Q1" validate:"required"`
+	MeetingDate          time.Time `json:"meeting_date" example:"2024-04-01T09:00:00Z" validate:"required"`
+	MeetingType          string    `json:"meeting_type" example:"Offline" validate:"required"`
+	Summary              string    `json:"summary" example:"Evaluasi target kuartal 1 berjalan baik." validate:"required"`
+	Notes                string    `json:"notes" example:"Perlu ada peningkatan promosi di Q2."`
+	Speaker              *string   `json:"speaker" example:"Bapak Direktur"`
+	ExternalParticipants []string  `json:"external_participants" example:"Bapak Dani,Ibu Salsabila"` // PENAMBAHAN
 }
 
 type UpdateResultStatusRequest struct {
@@ -82,6 +84,7 @@ type MeetingMinuteResponse struct {
 	Notes                string                       `json:"notes"`
 	Speaker              *string                      `json:"speaker"`
 	NumberOfParticipants int                          `json:"number_of_participants"`
+	ExternalParticipants []string                     `json:"external_participants"` // PENAMBAHAN
 	CreatedAt            time.Time                    `json:"created_at"`
 	UpdatedAt            time.Time                    `json:"updated_at"`
 	Participants         []MeetingParticipantResponse `json:"participants,omitempty"`

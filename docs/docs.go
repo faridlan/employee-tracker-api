@@ -1263,6 +1263,16 @@ const docTemplate = `{
                     "type": "string",
                     "example": "Marketing"
                 },
+                "external_participants": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "example": [
+                        "Bapak Dani",
+                        "Ibu Salsabila"
+                    ]
+                },
                 "image_urls": {
                     "type": "array",
                     "items": {
@@ -1415,6 +1425,13 @@ const docTemplate = `{
                 },
                 "division": {
                     "type": "string"
+                },
+                "external_participants": {
+                    "description": "PENAMBAHAN",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 },
                 "id": {
                     "type": "string"
@@ -1723,6 +1740,17 @@ const docTemplate = `{
                 "division": {
                     "type": "string",
                     "example": "Marketing"
+                },
+                "external_participants": {
+                    "description": "PENAMBAHAN",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "example": [
+                        "Bapak Dani",
+                        "Ibu Salsabila"
+                    ]
                 },
                 "meeting_date": {
                     "type": "string",

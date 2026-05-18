@@ -19,6 +19,7 @@ type MeetingMinute struct {
 	Notes                string
 	Speaker              *string
 	NumberOfParticipants int
+	ExternalParticipants *string
 	CreatedAt            time.Time
 	UpdatedAt            time.Time
 	DeletedAt            *time.Time
@@ -65,13 +66,14 @@ type MeetingImage struct {
 
 // CreateMeetingInput dirancang untuk bisa menerima data peserta dan hasil rapat sekaligus
 type CreateMeetingInput struct {
-	Division    string
-	Title       string
-	MeetingDate time.Time
-	MeetingType string
-	Summary     string
-	Notes       string
-	Speaker     *string
+	Division             string
+	Title                string
+	MeetingDate          time.Time
+	MeetingType          string
+	Summary              string
+	Notes                string
+	Speaker              *string
+	ExternalParticipants *string
 
 	ParticipantIDs []string                   // Hanya menerima array of Employee ID
 	Results        []CreateMeetingResultInput // Menerima daftar hasil rapat / action items
@@ -86,14 +88,15 @@ type CreateMeetingResultInput struct {
 }
 
 type UpdateMeetingInput struct {
-	ID          string
-	Division    string
-	Title       string
-	MeetingDate time.Time
-	MeetingType string
-	Summary     string
-	Notes       string
-	Speaker     *string
+	ID                   string
+	Division             string
+	Title                string
+	MeetingDate          time.Time
+	MeetingType          string
+	Summary              string
+	Notes                string
+	Speaker              *string
+	ExternalParticipants *string
 }
 
 // UpdateResultStatusInput khusus digunakan saat Employee ingin mengubah status tugasnya (misal: "To Do" jadi "Done")

@@ -36,12 +36,16 @@ func (r *meetingMinuteRepository) Create(ctx context.Context, meeting *domain.Me
 	return nil
 }
 
-// Update menyimpan perubahan pada data induk Notulen (tidak mengupdate child-nya secara full-replace di sini)
+// Update menyimpan perubahan pada data induk Notulen (dipaksa mengupdate zero-value / nil)
 func (r *meetingMinuteRepository) Update(ctx context.Context, meeting *domain.MeetingMinute) error {
 	model := FromDomainMeetingMinute(meeting)
 
-	// Update kolom spesifik saja untuk induknya
-	err := r.db.WithContext(ctx).Model(&model).Updates(model).Error
+	// PENTING: Tambahkan Select untuk kolom induk agar jika user mengubah data menjadi
+	// kosong atau nil (misal menghapus Speaker atau ExternalParticipants), nilainya tetap ter-update di DB (menjadi NULL).
+	err := r.db.WithContext(ctx).
+		Model(&model).
+		Select("Division", "Title", "MeetingDate", "MeetingType", "Summary", "Notes", "Speaker", "NumberOfParticipants", "ExternalParticipants", "UpdatedAt").
+		Updates(model).Error
 	if err != nil {
 		return TranslateError(err)
 	}

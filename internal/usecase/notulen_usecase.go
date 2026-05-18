@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"context"
+	"strings"
 
 	"github.com/faridlan/employee-tracker-api/internal/domain"
 )
@@ -20,6 +21,15 @@ func NewMeetingMinuteUsecase(repo domain.MeetingMinuteRepository) domain.Meeting
 // CreateMeeting menangani logika pembuatan Notulen Rapat beserta Peserta, Tugas, dan Dokumentasinya
 func (u *meetingMinuteUsecase) CreateMeeting(ctx context.Context, input domain.CreateMeetingInput) (*domain.MeetingMinute, error) {
 
+	// ---> LOGIKA MENGHITUNG TOTAL PESERTA <---
+	externalCount := 0
+	if input.ExternalParticipants != nil && *input.ExternalParticipants != "" {
+		// Pecah berdasarkan koma, lalu hitung jumlahnya
+		externalCount = len(strings.Split(*input.ExternalParticipants, ","))
+	}
+	// Total = (Orang Dalam) + (Orang Luar)
+	totalParticipants := len(input.ParticipantIDs) + externalCount
+
 	// 1. Siapkan Entitas Induk (Meeting Minute)
 	meeting := &domain.MeetingMinute{
 		Division:             input.Division,
@@ -29,7 +39,8 @@ func (u *meetingMinuteUsecase) CreateMeeting(ctx context.Context, input domain.C
 		Summary:              input.Summary,
 		Notes:                input.Notes,
 		Speaker:              input.Speaker,
-		NumberOfParticipants: len(input.ParticipantIDs), // Otomatis hitung jumlah peserta dari array ID
+		ExternalParticipants: input.ExternalParticipants,
+		NumberOfParticipants: totalParticipants, // ---> MASUKKAN TOTAL BARU DI SINI <---
 	}
 
 	// 2. Mapping data array ParticipantIDs menjadi struct domain.MeetingParticipant
@@ -77,6 +88,27 @@ func (u *meetingMinuteUsecase) UpdateMeeting(ctx context.Context, input domain.U
 		return nil, domain.NewError(domain.ErrNotFound, "Notulen rapat dengan ID tersebut tidak ditemukan")
 	}
 
+	// ---> LOGIKA MENGHITUNG TOTAL PESERTA SAAT UPDATE <---
+
+	// A. Hitung jumlah peserta eksternal yang LAMA (sebelum diupdate)
+	oldExternalCount := 0
+	if existing.ExternalParticipants != nil && *existing.ExternalParticipants != "" {
+		oldExternalCount = len(strings.Split(*existing.ExternalParticipants, ","))
+	}
+
+	// B. Deduksi jumlah internal (karena saat update kita tidak menerima ParticipantIDs)
+	// Internal = Total Peserta di DB - Jumlah Eksternal Lama
+	internalCount := existing.NumberOfParticipants - oldExternalCount
+
+	// C. Hitung jumlah peserta eksternal BARU (dari request body)
+	newExternalCount := 0
+	if input.ExternalParticipants != nil && *input.ExternalParticipants != "" {
+		newExternalCount = len(strings.Split(*input.ExternalParticipants, ","))
+	}
+
+	// D. Hitung Total Baru
+	newTotalParticipants := internalCount + newExternalCount
+
 	// Update field dasar
 	existing.Division = input.Division
 	existing.Title = input.Title
@@ -85,6 +117,8 @@ func (u *meetingMinuteUsecase) UpdateMeeting(ctx context.Context, input domain.U
 	existing.Summary = input.Summary
 	existing.Notes = input.Notes
 	existing.Speaker = input.Speaker
+	existing.ExternalParticipants = input.ExternalParticipants
+	existing.NumberOfParticipants = newTotalParticipants // ---> UPDATE TOTAL DI SINI <---
 
 	// Teruskan ke repository untuk diupdate
 	err = u.notulenRepo.Update(ctx, existing)

@@ -1,6 +1,8 @@
 package http
 
 import (
+	"strings"
+
 	"github.com/faridlan/employee-tracker-api/internal/delivery/http/dto"
 	"github.com/faridlan/employee-tracker-api/internal/domain"
 	"github.com/faridlan/employee-tracker-api/internal/utils"
@@ -23,6 +25,17 @@ func toMeetingMinuteResponse(m *domain.MeetingMinute) dto.MeetingMinuteResponse 
 		return dto.MeetingMinuteResponse{}
 	}
 
+	// PROSES PECAH STRING (DARI DB) MENJADI ARRAY UNTUK FRONTEND
+	var extParticipants []string
+	if m.ExternalParticipants != nil && *m.ExternalParticipants != "" {
+		// Cara baru: Langsung looping menggunakan SplitSeq tanpa array perantara
+		for name := range strings.SplitSeq(*m.ExternalParticipants, ",") {
+			extParticipants = append(extParticipants, strings.TrimSpace(name))
+		}
+	} else {
+		extParticipants = []string{}
+	}
+
 	res := dto.MeetingMinuteResponse{
 		ID:                   m.ID,
 		Division:             m.Division,
@@ -33,6 +46,7 @@ func toMeetingMinuteResponse(m *domain.MeetingMinute) dto.MeetingMinuteResponse 
 		Notes:                m.Notes,
 		Speaker:              m.Speaker,
 		NumberOfParticipants: m.NumberOfParticipants,
+		ExternalParticipants: extParticipants, // DIMASUKKAN KE SINI
 		CreatedAt:            m.CreatedAt,
 		UpdatedAt:            m.UpdatedAt,
 	}
@@ -46,7 +60,7 @@ func toMeetingMinuteResponse(m *domain.MeetingMinute) dto.MeetingMinuteResponse 
 			CreatedAt:  p.CreatedAt,
 		}
 		if p.Employee != nil {
-			emp := toEmployeeResponse(p.Employee) // Memakai helper dari employee_handler.go
+			emp := toEmployeeResponse(p.Employee)
 			partRes.Employee = &emp
 		}
 		res.Participants = append(res.Participants, partRes)
@@ -107,17 +121,25 @@ func (h *MeetingMinuteHandler) CreateMeeting(c *fiber.Ctx) error {
 		return utils.SendError(c, fiber.StatusBadRequest, err.Error())
 	}
 
+	// PROSES GABUNG ARRAY (DARI FE) MENJADI SATU STRING UNTUK DB
+	var externalNames *string
+	if len(req.ExternalParticipants) > 0 {
+		joinedNames := strings.Join(req.ExternalParticipants, ", ")
+		externalNames = &joinedNames
+	}
+
 	// Mapping DTO ke Domain Input
 	input := domain.CreateMeetingInput{
-		Division:       req.Division,
-		Title:          req.Title,
-		MeetingDate:    req.MeetingDate,
-		MeetingType:    req.MeetingType,
-		Summary:        req.Summary,
-		Notes:          req.Notes,
-		Speaker:        req.Speaker,
-		ParticipantIDs: req.ParticipantIDs,
-		ImageURLs:      req.ImageURLs,
+		Division:             req.Division,
+		Title:                req.Title,
+		MeetingDate:          req.MeetingDate,
+		MeetingType:          req.MeetingType,
+		Summary:              req.Summary,
+		Notes:                req.Notes,
+		Speaker:              req.Speaker,
+		ExternalParticipants: externalNames, // DIMASUKKAN KE SINI
+		ParticipantIDs:       req.ParticipantIDs,
+		ImageURLs:            req.ImageURLs,
 	}
 
 	for _, r := range req.Results {
@@ -162,15 +184,23 @@ func (h *MeetingMinuteHandler) UpdateMeeting(c *fiber.Ctx) error {
 		return utils.SendError(c, fiber.StatusBadRequest, err.Error())
 	}
 
+	// PROSES GABUNG ARRAY (DARI FE) MENJADI SATU STRING UNTUK DB
+	var externalNames *string
+	if len(req.ExternalParticipants) > 0 {
+		joinedNames := strings.Join(req.ExternalParticipants, ", ")
+		externalNames = &joinedNames
+	}
+
 	input := domain.UpdateMeetingInput{
-		ID:          id,
-		Division:    req.Division,
-		Title:       req.Title,
-		MeetingDate: req.MeetingDate,
-		MeetingType: req.MeetingType,
-		Summary:     req.Summary,
-		Notes:       req.Notes,
-		Speaker:     req.Speaker,
+		ID:                   id,
+		Division:             req.Division,
+		Title:                req.Title,
+		MeetingDate:          req.MeetingDate,
+		MeetingType:          req.MeetingType,
+		Summary:              req.Summary,
+		Notes:                req.Notes,
+		Speaker:              req.Speaker,
+		ExternalParticipants: externalNames, // DIMASUKKAN KE SINI
 	}
 
 	result, err := h.usecase.UpdateMeeting(c.Context(), input)

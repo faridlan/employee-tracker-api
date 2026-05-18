@@ -1,0 +1,1 @@
+ALTER TABLE meeting_minutes DROP COLUMN external_participants;

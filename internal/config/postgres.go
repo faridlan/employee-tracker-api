@@ -14,7 +14,9 @@ func InitDB(user, pass, host, port, dbname string) *gorm.DB {
 		host, user, pass, dbname, port,
 	)
 
-	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{
+		PrepareStmt: false,
+	})
 	if err != nil {
 		log.Fatal("Gagal koneksi ke database: ", err)
 	}

@@ -70,6 +70,13 @@ definitions:
       division:
         example: Marketing
         type: string
+      external_participants:
+        example:
+        - Bapak Dani
+        - Ibu Salsabila
+        items:
+          type: string
+        type: array
       image_urls:
         example:
         - https://storage.com/img1.jpg
@@ -183,6 +190,11 @@ definitions:
         type: string
       division:
         type: string
+      external_participants:
+        description: PENAMBAHAN
+        items:
+          type: string
+        type: array
       id:
         type: string
       images:
@@ -380,6 +392,14 @@ definitions:
       division:
         example: Marketing
         type: string
+      external_participants:
+        description: PENAMBAHAN
+        example:
+        - Bapak Dani
+        - Ibu Salsabila
+        items:
+          type: string
+        type: array
       meeting_date:
         example: "2024-04-01T09:00:00Z"
         type: string

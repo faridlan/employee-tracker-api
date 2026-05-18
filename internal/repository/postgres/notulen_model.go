@@ -21,6 +21,7 @@ type MeetingMinuteModel struct {
 	Notes                string         `gorm:"type:text"`
 	Speaker              *string        `gorm:"type:varchar(255)"`
 	NumberOfParticipants int            `gorm:"default:0"`
+	ExternalParticipants *string        `gorm:"type:text"`
 	CreatedAt            time.Time      `gorm:"autoCreateTime"`
 	UpdatedAt            time.Time      `gorm:"autoUpdateTime"`
 	DeletedAt            gorm.DeletedAt `gorm:"index"`
@@ -84,6 +85,7 @@ func (m *MeetingMinuteModel) ToDomain() *domain.MeetingMinute {
 		Notes:                m.Notes,
 		Speaker:              m.Speaker,
 		NumberOfParticipants: m.NumberOfParticipants,
+		ExternalParticipants: m.ExternalParticipants,
 		CreatedAt:            m.CreatedAt,
 		UpdatedAt:            m.UpdatedAt,
 	}
@@ -161,6 +163,7 @@ func FromDomainMeetingMinute(d *domain.MeetingMinute) MeetingMinuteModel {
 		Notes:                d.Notes,
 		Speaker:              d.Speaker,
 		NumberOfParticipants: d.NumberOfParticipants,
+		ExternalParticipants: d.ExternalParticipants,
 		CreatedAt:            d.CreatedAt,
 		UpdatedAt:            d.UpdatedAt,
 	}
